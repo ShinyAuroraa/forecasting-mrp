@@ -1,0 +1,120 @@
+{
+  "report": "ForecastingMRP Environment Bootstrap",
+  "timestamp": "2026-02-25T16:00:00Z",
+  "project": {
+    "name": "forecasting-mrp",
+    "path": "C:\\Users\\Berge\\OneDrive\\Documentos\\Sistema de planejamento",
+    "package_manager": "pnpm"
+  },
+  "cli_versions": {
+    "git": {
+      "installed": true,
+      "version": "2.53.0.windows.1"
+    },
+    "node": {
+      "installed": true,
+      "version": "24.13.1",
+      "meets_minimum": true,
+      "minimum_required": "18.0.0"
+    },
+    "pnpm": {
+      "installed": true,
+      "version": "9.15.9"
+    },
+    "gh": {
+      "installed": true,
+      "version": "2.87.2",
+      "authenticated": true,
+      "account": "ShinyAuroraa"
+    },
+    "docker": {
+      "installed": true,
+      "version": "29.2.1"
+    },
+    "docker_compose": {
+      "installed": true,
+      "version": "5.0.2"
+    },
+    "python": {
+      "installed": true,
+      "version": "3.13.12"
+    }
+  },
+  "missing_tools": [],
+  "repository": {
+    "initialized": true,
+    "default_branch": "main",
+    "remote": "https://github.com/ShinyAuroraa/forecasting-mrp",
+    "visibility": "private",
+    "git_user": "ShinyAuroraa",
+    "git_email": "icaroberger00@gmail.com"
+  },
+  "scaffold": {
+    "monorepo_type": "turborepo",
+    "workspaces": ["apps/*", "packages/*"],
+    "apps": {
+      "web": {
+        "framework": "Next.js 14",
+        "language": "TypeScript",
+        "status": "scaffold_created"
+      },
+      "api": {
+        "framework": "NestJS 10",
+        "language": "TypeScript",
+        "status": "scaffold_created"
+      },
+      "forecast-engine": {
+        "framework": "FastAPI",
+        "language": "Python 3.11+",
+        "status": "scaffold_created"
+      }
+    },
+    "packages": {
+      "shared": {
+        "language": "TypeScript",
+        "status": "scaffold_created"
+      }
+    }
+  },
+  "infrastructure": {
+    "docker_compose": {
+      "created": true,
+      "services": {
+        "postgres": {
+          "image": "timescale/timescaledb:latest-pg16",
+          "port": 5432,
+          "health_check": true
+        },
+        "redis": {
+          "image": "redis:7-alpine",
+          "port": 6379,
+          "health_check": true
+        }
+      }
+    }
+  },
+  "files_created": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "turbo.json",
+    "docker-compose.yml",
+    ".gitignore",
+    ".env.example",
+    "README.md",
+    "apps/web/package.json",
+    "apps/web/tsconfig.json",
+    "apps/web/README.md",
+    "apps/api/package.json",
+    "apps/api/tsconfig.json",
+    "apps/api/README.md",
+    "apps/forecast-engine/requirements.txt",
+    "apps/forecast-engine/pyproject.toml",
+    "apps/forecast-engine/README.md",
+    "apps/forecast-engine/.env.example",
+    "packages/shared/package.json",
+    "packages/shared/tsconfig.json",
+    "packages/shared/src/index.ts",
+    "packages/shared/README.md",
+    ".aios/environment-report.json"
+  ]
+}

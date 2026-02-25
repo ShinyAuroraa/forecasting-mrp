@@ -1,29 +1,106 @@
+# ============================================
+# ForecastingMRP - Comprehensive .gitignore
+# ============================================
 
-
-# Environment & Secrets (AIOS)
+# -------------------------------------------
+# Environment & Secrets
+# -------------------------------------------
 .env
 .env.local
 .env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.key
 *.pem
+*.p12
+*.pfx
 
-# Dependencies (AIOS)
+# -------------------------------------------
+# Dependencies
+# -------------------------------------------
 node_modules/
-node_modules
+.pnpm-store/
 
-# Build & Logs (AIOS)
+# -------------------------------------------
+# Build Outputs
+# -------------------------------------------
 dist/
 build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# -------------------------------------------
+# Python
+# -------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+.Python
+*.egg-info/
+*.egg
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+models/*.ckpt
+models/*.pt
+models/*.pth
+models/*.bin
+*.onnx
+
+# -------------------------------------------
+# Logs
+# -------------------------------------------
 *.log
 logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# IDE & OS (AIOS)
+# -------------------------------------------
+# IDE & Editors
+# -------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# -------------------------------------------
+# OS Files
+# -------------------------------------------
 .DS_Store
 Thumbs.db
-.idea/
-*.swp
+Desktop.ini
+ehthumbs.db
 
-# AIOS Local (AIOS)
+# -------------------------------------------
+# Docker Volumes (local)
+# -------------------------------------------
+docker-data/
+
+# -------------------------------------------
+# Testing
+# -------------------------------------------
+coverage/
+.nyc_output/
+
+# -------------------------------------------
+# AIOS Local (Framework)
+# -------------------------------------------
 .aios-core/local/
 .claude/settings.local.json
 .aios/install-log.txt
+.aios/handoffs/
