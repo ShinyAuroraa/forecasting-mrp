@@ -1,0 +1,30 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build All Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo build
+
+  # Placeholder for future deployment steps (Phase 5)
+  # deploy-api:
+  #   needs: build
+  #   ...
+  # deploy-web:
+  #   needs: build
+  #   ...

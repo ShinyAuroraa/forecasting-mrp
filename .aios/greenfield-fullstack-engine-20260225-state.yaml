@@ -1,0 +1,799 @@
+engine_state:
+  workflow_id: greenfield-fullstack
+  workflow_name: "Greenfield Full-Stack Application Development"
+  instance_id: "greenfield-fullstack-engine-20260225"
+  target_context: core
+  squad_name: null
+  mode: engine
+  started_at: "2026-02-25T12:00:00.000Z"
+  updated_at: "2026-02-28T23:35:00.000Z"
+  status: completed
+  current_step_index: 23
+  current_phase: "Complete"
+  last_completed_step: "po-epic-retrospective-5"
+  action_steps_completed: 93
+  action_steps_total: 93
+  current_epic: 5
+  current_story: "5.10"
+  all_epics_completed: true
+  step_outputs_story_5_10:
+    files_created: 16
+    files_modified: 2
+    backend_tests: 19
+    frontend_tests: 0
+    k8s_manifests: 10
+    total_acceptance_criteria: 14
+    acceptance_criteria_met: 14
+    status: "Done"
+    code_review_fixes: 8
+    key_changes: "ConfigSistemaService with getAll/get/getTyped/upsert/delete/seedDefaults (18 default config keys), ConfigSistemaController with CRUD+seed endpoints, 10 K8s manifests (namespace, configmap, secrets, postgres StatefulSet, redis StatefulSet, api+web+forecast-engine deployments, HPA for api+forecast, ALB ingress with TLS), GPU Spot Instance node selector for forecast-engine. CR fixes: added UpsertConfigDto with validation, aligned lot_sizing_method enum to L4L/EOQ/SILVER_MEAL/WAGNER_WHITIN, replaced seedDefaults N+1 with createMany+skipDuplicates, converted Redis to StatefulSet with PVC, pinned TimescaleDB image version, removed duplicate REDIS_URL from ConfigMap, removed deprecated ingress annotation, updated tests for new seedDefaults pattern"
+  step_outputs_story_5_9:
+    files_created: 13
+    files_modified: 1
+    backend_tests: 36
+    frontend_tests: 0
+    load_test_scripts: 3
+    total_acceptance_criteria: 17
+    acceptance_criteria_met: 17
+    status: "Done"
+    code_review_fixes: 10
+    key_changes: "Jest E2E config, integration test setup with mocked Prisma, 7 integration test suites (auth, products, BOM, forecast-override, export, MRP, activity-log), 3 k6 load test scripts (CRUD 100VU, export 20VU, MRP 5VU) with normal/peak/stress profiles. CR fixes: fixed setupFilesAfterFramework key, added auth happy path test, fixed non-UUID params in BOM tests, added products 404 test, removed silent-pass assertions in MRP/export, added k6 setup() for JWT auth, added forecast override revert happy path"
+  step_outputs_story_5_8:
+    files_created: 5
+    files_modified: 3
+    backend_tests: 15
+    frontend_tests: 0
+    total_acceptance_criteria: 14
+    acceptance_criteria_met: 14
+    status: "Done"
+    code_review_fixes: 6
+    key_changes: "TipoAtividade enum + AtividadeUsuario Prisma model, 3 new PDF report types, ActivityLogService, ActivityLogInterceptor. CR fixes: registered ActivityLogModule in AppModule, added PDF Promise reject+error handler, validated page/limit/days params, removed as-any casts, fixed interceptor prefix stripping for /api/v1, added prefix-stripping tests"
+  step_outputs_story_5_7:
+    files_created: 4
+    files_modified: 3
+    backend_tests: 13
+    frontend_tests: 0
+    total_acceptance_criteria: 14
+    acceptance_criteria_met: 14
+    status: "Done"
+    code_review_fixes: 7
+    key_changes: "HistoricoLeadTime Prisma model, LeadTimeTrackingService with record/getHistory/calculateStats/getSigmaLt, StockParamsService integration preferring historical sigma_LT over (max-min)/6 estimate. CR fixes: removed as-any cast, fixed stddev comment, validated page/limit params, consistent sample stddev across sigma_d and sigma_LT, added @IsUUID to DTO, added principal supplier ordering test, deleted dead getDemandStatistics method"
+  step_outputs_story_5_6:
+    files_created: 1
+    files_modified: 4
+    backend_tests: 18
+    frontend_tests: 0
+    total_acceptance_criteria: 13
+    acceptance_criteria_met: 13
+    status: "Done"
+    code_review_fixes: 0
+    key_changes: "BomVersionService with atomic version transitions, 4 versioning endpoints, versao field with unique constraint, date-based BOM lookup"
+  step_outputs_story_5_5:
+    files_created: 8
+    files_modified: 5
+    backend_tests: 14
+    frontend_tests: 15
+    total_acceptance_criteria: 17
+    acceptance_criteria_met: 17
+    status: "Done"
+    code_review_fixes: 2
+    key_changes: "ForecastOverride Prisma model with CategoriaOverride enum, ForecastOverrideService with create/findAll/revert, OverrideForm modal, OverrideHistory panel with category badges"
+  step_outputs_story_5_4:
+    files_created: 6
+    files_modified: 4
+    backend_tests: 14
+    frontend_tests: 17
+    total_acceptance_criteria: 16
+    acceptance_criteria_met: 16
+    status: "Done"
+    code_review_fixes: 0
+    key_changes: "DriftDetectionService with rolling MAPE computation, drift status (STABLE/WARNING/DRIFTING), auto-retraining trigger, DriftMonitor with MapeSparkline SVG"
+  step_outputs_story_5_3:
+    files_created: 5
+    files_modified: 11
+    python_tests: 16
+    backend_tests: 12
+    frontend_tests: 10
+    total_acceptance_criteria: 17
+    acceptance_criteria_met: 17
+    status: "Done"
+    code_review_fixes: 3
+    key_changes: "ChampionChallengerService with evaluate/apply_promotion, Backtester.collect_metadata extended with champion_mapes, NestJS champion endpoints, ChampionHistory timeline component"
+  step_outputs_story_5_2:
+    files_created: 4
+    files_modified: 6
+    backend_tests: 16
+    frontend_tests: 8
+    total_acceptance_criteria: 17
+    acceptance_criteria_met: 17
+    status: "Done"
+    code_review_fixes: 2
+    algorithm: "Monte Carlo simulation with mulberry32 seeded RNG, Box-Muller normal sampling, empirical demand distribution"
+  step_outputs_story_5_1:
+    files_created: 4
+    files_modified: 6
+    backend_tests: 9
+    frontend_tests: 6
+    total_acceptance_criteria: 19
+    acceptance_criteria_met: 19
+    status: "Done"
+    code_review_fixes: 3
+    algorithm: "Wagner-Whitin DP O(m²) with incremental holding cost"
+  step_outputs_story_4_10:
+    files_created: 14
+    files_modified: 2
+    backend_tests: 14
+    frontend_tests: 9
+    total_acceptance_criteria: 22
+    acceptance_criteria_met: 22
+    status: "Done"
+  step_outputs_story_4_9:
+    files_created: 13
+    files_modified: 2
+    backend_tests: 15
+    frontend_tests: 6
+    total_acceptance_criteria: 19
+    acceptance_criteria_met: 19
+    status: "Done"
+  step_outputs_story_4_8:
+    files_created: 14
+    files_modified: 2
+    backend_tests: 17
+    frontend_tests: 7
+    total_acceptance_criteria: 24
+    acceptance_criteria_met: 24
+    status: "Done"
+  step_outputs_story_4_7:
+    files_created: 13
+    files_modified: 4
+    backend_tests: 37
+    frontend_tests: 7
+    total_acceptance_criteria: 20
+    acceptance_criteria_met: 20
+    status: "Done"
+  step_outputs_story_4_6:
+    files_created: 16
+    files_modified: 3
+    backend_tests: 29
+    frontend_tests: 14
+    total_acceptance_criteria: 24
+    acceptance_criteria_met: 24
+    status: "Done"
+  step_outputs_story_4_5:
+    files_created: 14
+    files_modified: 3
+    backend_tests: 22
+    frontend_tests: 14
+    total_acceptance_criteria: 18
+    acceptance_criteria_met: 18
+    status: "Done"
+  step_outputs_story_4_4:
+    files_created: 15
+    files_modified: 4
+    backend_tests: 33
+    frontend_tests: 16
+    total_acceptance_criteria: 21
+    acceptance_criteria_met: 21
+    status: "Done"
+  step_outputs_story_4_3:
+    files_created: 21
+    files_modified: 4
+    backend_tests: 53
+    frontend_tests: 16
+    total_acceptance_criteria: 17
+    acceptance_criteria_met: 17
+    status: "Done"
+  step_outputs_story_4_2:
+    files_created: 19
+    files_modified: 2
+    backend_tests: 32
+    frontend_tests: 10
+    total_acceptance_criteria: 19
+    acceptance_criteria_met: 19
+    status: "Done"
+  step_outputs_story_4_1:
+    files_created: 17
+    files_modified: 4
+    backend_tests: 25
+    frontend_tests: 10
+    total_acceptance_criteria: 16
+    acceptance_criteria_met: 16
+    status: "Done"
+  epic_3_plan:
+    stories_planned: 12
+    stories:
+      - { id: "3.1", title: "Production Routing & Factory Calendar CRUD", fr: "FR-047,FR-048", status: "Done" }
+      - { id: "3.2", title: "Net Requirement Calculation Engine", fr: "FR-049", status: "Done" }
+      - { id: "3.3", title: "Stock Parameter Calculation", fr: "FR-035", status: "Done" }
+      - { id: "3.4", title: "Multi-Level BOM Explosion", fr: "FR-036", status: "Done" }
+      - { id: "3.5", title: "Lot Sizing Engine", fr: "FR-037", status: "Done" }
+      - { id: "3.6", title: "Master Production Schedule", fr: "FR-034", status: "Done" }
+      - { id: "3.7", title: "Planned Order Generation", fr: "FR-038", status: "Done" }
+      - { id: "3.8", title: "Action Messages", fr: "FR-039", status: "Done" }
+      - { id: "3.9", title: "CRP & Storage Capacity Validation", fr: "FR-040,FR-041", status: "Done" }
+      - { id: "3.10", title: "MRP Orchestrator & Execution API", fr: "FR-034-049", status: "Done" }
+      - { id: "3.11", title: "Purchasing Panel", fr: "FR-042", status: "Done" }
+      - { id: "3.12", title: "MRP & Capacity Dashboards", fr: "FR-043-046", status: "Done" }
+  epic_4_plan:
+    stories_planned: 10
+    notes: "FR-055 (LightGBM) and FR-056 (Ensemble) already delivered in Epic 2 Story 2.5 — skipped"
+    stories:
+      - { id: "4.1", title: "Ingestion Mapping Templates", fr: "FR-061", status: "Done" }
+      - { id: "4.2", title: "ERP Connector (REST/DB/SFTP)", fr: "FR-051", status: "Done" }
+      - { id: "4.3", title: "Email Listener & PDF Processing", fr: "FR-050,FR-060", status: "Done" }
+      - { id: "4.4", title: "Centralized Alert System", fr: "FR-062", status: "Done" }
+      - { id: "4.5", title: "Re-training Cycle Management", fr: "FR-059", status: "Done" }
+      - { id: "4.6", title: "Daily Automated Pipeline", fr: "FR-052", status: "Done" }
+      - { id: "4.7", title: "Daily Summary & Morning Briefing Emails", fr: "FR-053,FR-063", status: "Done" }
+      - { id: "4.8", title: "Executive BI Dashboard", fr: "FR-054", status: "Done" }
+      - { id: "4.9", title: "What-If Scenario Analysis", fr: "FR-057", status: "Done" }
+      - { id: "4.10", title: "Excel/PDF Export", fr: "FR-058", status: "Done" }
+  epic_5_plan:
+    stories_planned: 10
+    notes: "FR-071 (PDF Management Reports) already partially covered by Story 4.10 PDF generator — extends with management-specific templates"
+    stories:
+      - { id: "5.1", title: "Wagner-Whitin Optimal Lot Sizing", fr: "FR-064", status: "Done" }
+      - { id: "5.2", title: "Monte Carlo Safety Stock Simulation", fr: "FR-065", status: "Done" }
+      - { id: "5.3", title: "Champion-Challenger Model Selection", fr: "FR-066", status: "Done" }
+      - { id: "5.4", title: "Drift Detection & Auto-Retraining", fr: "FR-067", status: "Done" }
+      - { id: "5.5", title: "Manual Forecast Override with Audit Log", fr: "FR-068", status: "Done" }
+      - { id: "5.6", title: "BOM Versioning", fr: "FR-069", status: "Done" }
+      - { id: "5.7", title: "Historical Lead Time Tracking", fr: "FR-070", status: "Done" }
+      - { id: "5.8", title: "PDF Management Reports & User Activity Logging", fr: "FR-071,FR-075", status: "Done" }
+      - { id: "5.9", title: "Integration & Load Testing", fr: "FR-072,FR-073", status: "Done" }
+      - { id: "5.10", title: "System Configuration UI & Production Deployment", fr: "FR-074,FR-076", status: "Done" }
+  epic_2_plan:
+    stories_planned: 10
+    stories:
+      - { id: "2.1", title: "FastAPI Infrastructure & Database Repositories", fr: "FR-021", status: "Done" }
+      - { id: "2.2", title: "Model Registry & SKU Segmentation", fr: "FR-022", status: "Done" }
+      - { id: "2.3", title: "ETS & Croston/TSB Statistical Models", fr: "FR-025,FR-026", status: "Done" }
+      - { id: "2.4", title: "TFT Model (Volume & Revenue)", fr: "FR-023,FR-024", status: "Done" }
+      - { id: "2.5", title: "Feature Engineering & LightGBM Ensemble", fr: "FR-022", status: "Done" }
+      - { id: "2.6", title: "Forecast Execution Pipeline", fr: "FR-027,FR-028", status: "Done" }
+      - { id: "2.7", title: "Backtesting & Metrics Pipeline", fr: "FR-029,FR-032,FR-033", status: "Done" }
+      - { id: "2.8", title: "BullMQ Integration & WebSocket Gateway", fr: "FR-030", status: "Done" }
+      - { id: "2.9", title: "NestJS Forecast Module & Execution API", fr: "FR-030,FR-032,FR-033", status: "Done" }
+      - { id: "2.10", title: "Forecast Dashboard (Frontend)", fr: "FR-031", status: "Done" }
+  epic_1_plan:
+    stories_planned: 11
+    stories:
+      - { id: "1.1", title: "NestJS Common Infrastructure & Prisma Service", fr: "Infrastructure", status: "Done" }
+      - { id: "1.2", title: "Authentication & Authorization (JWT + RBAC)", fr: "FR-006", status: "Done" }
+      - { id: "1.3", title: "Product CRUD & Search", fr: "FR-007", status: "Done" }
+      - { id: "1.4", title: "Product Mass Import (CSV/XLSX)", fr: "FR-008", status: "Done" }
+      - { id: "1.5", title: "Supplier CRUD & SKU-Supplier Linkage", fr: "FR-011,FR-012", status: "Done" }
+      - { id: "1.6", title: "BOM CRUD, Tree & Exploded Cost", fr: "FR-009,FR-010", status: "Done" }
+      - { id: "1.7", title: "Work Center & Shift Management", fr: "FR-013,FR-014", status: "Done" }
+      - { id: "1.8", title: "Scheduled Stops & Capacity Events", fr: "FR-015,FR-016", status: "Done" }
+      - { id: "1.9", title: "Warehouse & Inventory Management", fr: "FR-017,FR-018", status: "Done" }
+      - { id: "1.10", title: "Data Ingestion Pipeline", fr: "FR-019", status: "Done" }
+      - { id: "1.11", title: "Automatic SKU Classification (ABC/XYZ)", fr: "FR-020", status: "Done" }
+  stories_created:
+    - { id: "0.1", title: "Monorepo App Scaffolding", status: "Done", fr: "FR-001" }
+    - { id: "0.2", title: "Docker Compose App Services", status: "Done", fr: "FR-002" }
+    - { id: "0.3", title: "Database Schema & Prisma Setup", status: "Done", fr: "FR-003" }
+    - { id: "0.4", title: "CI/CD Pipeline", status: "Done", fr: "FR-004" }
+    - { id: "0.5", title: "Synthetic Seed Data", status: "Done", fr: "FR-005" }
+    - { id: "1.1", title: "NestJS Common Infrastructure & Prisma Service", status: "Done", fr: "Infrastructure" }
+    - { id: "1.2", title: "Authentication & Authorization (JWT + RBAC)", status: "Done", fr: "FR-006" }
+    - { id: "1.3", title: "Product CRUD & Search", status: "Done", fr: "FR-007" }
+    - { id: "1.4", title: "Product Mass Import (CSV/XLSX)", status: "Done", fr: "FR-008" }
+    - { id: "1.5", title: "Supplier CRUD & SKU-Supplier Linkage", status: "Done", fr: "FR-011,FR-012" }
+    - { id: "1.6", title: "BOM CRUD, Tree & Exploded Cost", status: "Done", fr: "FR-009,FR-010" }
+    - { id: "1.7", title: "Work Center & Shift Management", status: "Done", fr: "FR-013,FR-014" }
+    - { id: "1.8", title: "Scheduled Stops & Capacity Events", status: "Done", fr: "FR-015,FR-016" }
+    - { id: "1.9", title: "Warehouse & Inventory Management", status: "Done", fr: "FR-017,FR-018" }
+    - { id: "1.10", title: "Data Ingestion Pipeline", status: "Done", fr: "FR-019" }
+    - { id: "1.11", title: "Automatic SKU Classification (ABC/XYZ)", status: "Done", fr: "FR-020" }
+    - { id: "2.1", title: "FastAPI Infrastructure & Database Repositories", status: "Done", fr: "FR-021" }
+    - { id: "2.2", title: "Model Registry & SKU Segmentation", status: "Done", fr: "FR-022" }
+    - { id: "2.3", title: "ETS & Croston/TSB Statistical Models", status: "Done", fr: "FR-025,FR-026" }
+    - { id: "2.4", title: "TFT Model (Volume & Revenue)", status: "Done", fr: "FR-023,FR-024" }
+    - { id: "2.5", title: "Feature Engineering & LightGBM Ensemble", status: "Done", fr: "FR-022" }
+    - { id: "2.6", title: "Forecast Execution Pipeline", status: "Done", fr: "FR-027,FR-028" }
+    - { id: "2.7", title: "Backtesting & Metrics Pipeline", status: "Done", fr: "FR-029,FR-032,FR-033" }
+    - { id: "2.8", title: "BullMQ Integration & WebSocket Gateway", status: "Done", fr: "FR-030" }
+    - { id: "2.9", title: "NestJS Forecast Module & Execution API", status: "Done", fr: "FR-030,FR-032,FR-033" }
+    - { id: "2.10", title: "Forecast Dashboard (Frontend)", status: "Done", fr: "FR-031" }
+    - { id: "3.1", title: "Production Routing & Factory Calendar CRUD", status: "Done", fr: "FR-047,FR-048" }
+    - { id: "3.2", title: "Net Requirement Calculation Engine", status: "Done", fr: "FR-049" }
+    - { id: "3.3", title: "Stock Parameter Calculation", status: "Done", fr: "FR-035" }
+    - { id: "3.4", title: "Multi-Level BOM Explosion", status: "Done", fr: "FR-036" }
+    - { id: "3.5", title: "Lot Sizing Engine", status: "Done", fr: "FR-037" }
+    - { id: "3.6", title: "Master Production Schedule", status: "Done", fr: "FR-034" }
+    - { id: "3.7", title: "Planned Order Generation", status: "Done", fr: "FR-038" }
+    - { id: "3.8", title: "Action Messages", status: "Done", fr: "FR-039" }
+    - { id: "3.9", title: "CRP & Storage Capacity Validation", status: "Done", fr: "FR-040,FR-041" }
+    - { id: "3.10", title: "MRP Orchestrator & Execution API", status: "Done", fr: "FR-034-049" }
+    - { id: "3.11", title: "Purchasing Panel", status: "Done", fr: "FR-042" }
+    - { id: "3.12", title: "MRP & Capacity Dashboards", status: "Done", fr: "FR-043-046" }
+    - { id: "4.1", title: "Ingestion Mapping Templates", status: "Draft", fr: "FR-061" }
+    - { id: "4.2", title: "ERP Connector (REST/DB/SFTP)", status: "Draft", fr: "FR-051" }
+    - { id: "4.3", title: "Email Listener & PDF Processing", status: "Done", fr: "FR-050,FR-060" }
+    - { id: "4.4", title: "Centralized Alert System", status: "Done", fr: "FR-062" }
+    - { id: "4.5", title: "Re-training Cycle Management", status: "Done", fr: "FR-059" }
+    - { id: "4.6", title: "Daily Automated Pipeline", status: "Done", fr: "FR-052" }
+    - { id: "4.7", title: "Daily Summary & Morning Briefing Emails", status: "Done", fr: "FR-053,FR-063" }
+    - { id: "4.8", title: "Executive BI Dashboard", status: "Draft", fr: "FR-054" }
+    - { id: "4.9", title: "What-If Scenario Analysis", status: "Done", fr: "FR-057" }
+    - { id: "4.10", title: "Excel/PDF Export", status: "Done", fr: "FR-058" }
+
+  step_outputs:
+    devops-environment-bootstrap:
+      cli_versions:
+        git: "2.53.0.windows.1"
+        node: "24.13.1"
+        pnpm: "9.15.9"
+        gh: "2.87.2"
+        docker: "29.2.1"
+        docker_compose: "5.0.2"
+        python: "3.13.12"
+      github_repo_url: "https://github.com/ShinyAuroraa/forecasting-mrp"
+      scaffold_created: true
+      docker_compose_created: true
+    analyst-project-brief:
+      brief_path: "docs/project-brief.md"
+      sections_completed: 11
+      key_insights:
+        - "MVP (Phase 0-1) delivers master data + classification before ML engine"
+        - "Highest risk: Phase 2→3 handoff (MRP depends on forecast output schema)"
+        - "Multi-model ML strategy is core differentiator"
+        - "BOM data quality is highest-likelihood risk"
+        - "Daily automated pipeline is ultimate value proposition (Phase 4)"
+    pm-create-prd:
+      prd_path: "docs/prd.md"
+      fr_count: 76
+      nfr_count: 29
+      con_count: 13
+      epic_count: 6
+      epics:
+        - { id: "Epic 0", name: "Infrastructure Setup", story_estimate: 5 }
+        - { id: "Epic 1", name: "Foundation — Data Layer & CRUDs", story_estimate: 12 }
+        - { id: "Epic 2", name: "Intelligence — Forecasting Engine", story_estimate: 10 }
+        - { id: "Epic 3", name: "MRP — Planning Engine", story_estimate: 12 }
+        - { id: "Epic 4", name: "Automation & BI", story_estimate: 10 }
+        - { id: "Epic 5", name: "Refinement & Production", story_estimate: 10 }
+      total_stories_estimate: 59
+    ux-create-frontend-spec:
+      spec_path: "docs/front-end-spec.md"
+      sections_completed: 11
+      screens_specified: 8
+      user_flows_documented: 5
+      components_defined: 47
+    architect-create-architecture:
+      architecture_path: "docs/fullstack-architecture.md"
+      sections_completed: 13
+      adr_count: 8
+      modules_defined: 12
+      prd_changes_suggested: true
+      prd_suggestions:
+        - "Add missing usuario table schema"
+        - "Add forecast_metrica and forecast_modelo tables"
+        - "Add sku_classification table"
+        - "Formalize WebSocket event payload schemas"
+        - "Add API endpoint inventory appendix"
+        - "Resolve MRP engine ambiguity: NestJS (not Python)"
+        - "Add serie_temporal/dados_limpos table"
+    sm-create-story:
+      epic: 0
+      stories_created: 5
+      story_files:
+        - "docs/stories/0.1.monorepo-app-scaffold.md"
+        - "docs/stories/0.2.docker-compose-services.md"
+        - "docs/stories/0.3.database-schema-prisma.md"
+        - "docs/stories/0.4.cicd-pipeline.md"
+        - "docs/stories/0.5.seed-data.md"
+    po-epic-retrospective-0:
+      epic_id: 0
+      epic_name: "Infrastructure Setup"
+      verdict: "APPROVED"
+      stories_delivered: 5
+      acceptance_criteria_met: "52/52"
+      tasks_completed: "42/42"
+      files_created: 38
+      files_modified: 18
+      technical_debt_items: 5
+      risks_mitigated: 5
+      retrospective_path: "docs/retrospectives/epic-0-retrospective.md"
+      recommendations:
+        - "Initialize Shadcn/UI in first Epic 1 UI story"
+        - "Configure branch protection in GitHub repo settings"
+        - "Verify Prisma 7 patterns in all story specs"
+        - "Add .env.example documentation for POSTGRES_PORT=5434"
+    po-epic-retrospective-1:
+      epic_id: 1
+      epic_name: "Foundation — Data Layer & CRUDs"
+      verdict: "APPROVED"
+      stories_delivered: 11
+      acceptance_criteria_met: "120/120"
+      tasks_completed: "248/248"
+      source_files_created: 95
+      test_files_created: 36
+      total_tests: 301
+      test_suites: 43
+      modules_delivered: 9
+      technical_debt_items: 6
+      risks_mitigated: 6
+      retrospective_path: "docs/retrospectives/epic-1-retrospective.md"
+      recommendations:
+        - "Commit Epic 1 work with story-level git commits"
+        - "Add integration tests with Testcontainers"
+        - "Extract shared CSV/XLSX upload utility"
+        - "Add Swagger/OpenAPI documentation"
+        - "Plan BullMQ integration for async jobs"
+        - "Initialize WebSocket gateway for Epic 2"
+        - "Initialize Shadcn/UI for frontend stories"
+        - "Verify Docker Compose full stack startup"
+    po-shard-documents:
+      prd_shards: 12
+      architecture_shards: 15
+      extra_artifacts:
+        - "docs/architecture/source-tree.md"
+        - "docs/architecture/tech-stack.md"
+        - "docs/architecture/coding-standards.md"
+      method: "md-tree (automatic)"
+    po-validate-artifacts:
+      overall_readiness_percent: 92
+      verdict: "CONDITIONAL"
+      critical_issues_count: 0
+      sections_evaluated: 9
+      sections_passed: 8
+      cross_doc_issues: 4
+      must_fix_items: []
+      conditional_items:
+        - "Architecture ER diagram: 21 tables vs PRD v2.1 26 tables"
+        - "Architecture metadata references PRD v2.0"
+        - "Frontend spec metadata references PRD v2.0"
+        - "5 open frontend design questions (deferred to Epic 1)"
+    pm-update-prd:
+      prd_version: "2.1"
+      tables_added:
+        - "usuario"
+        - "forecast_metrica"
+        - "forecast_modelo"
+        - "sku_classification"
+        - "serie_temporal"
+      sections_modified:
+        - "2.1"
+        - "2.2"
+        - "3.3"
+        - "3.5"
+        - "4.1 FR-003"
+        - "Appendix E"
+      websocket_schemas_added: 4
+      api_endpoints_documented: 11
+      mrp_ambiguity_resolved: true
+
+  step_results:
+    devops-environment-bootstrap:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:00:30.000Z"
+      completed_at: "2026-02-25T12:05:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "docker-compose.yml"
+          path: "docker-compose.yml"
+          status: created
+        - name: "turbo.json"
+          path: "turbo.json"
+          status: created
+        - name: "pnpm-workspace.yaml"
+          path: "pnpm-workspace.yaml"
+          status: created
+        - name: "package.json"
+          path: "package.json"
+          status: created
+        - name: "environment-report.json"
+          path: ".aios/environment-report.json"
+          status: created
+        - name: ".gitignore"
+          path: ".gitignore"
+          status: updated
+        - name: ".env.example"
+          path: ".env.example"
+          status: updated
+        - name: "README.md"
+          path: "README.md"
+          status: created
+
+    analyst-project-brief:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:06:00.000Z"
+      completed_at: "2026-02-25T12:10:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "project-brief.md"
+          path: "docs/project-brief.md"
+          status: created
+
+    pm-create-prd:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:11:00.000Z"
+      completed_at: "2026-02-25T12:20:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "prd.md"
+          path: "docs/prd.md"
+          status: created
+
+    ux-create-frontend-spec:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:21:00.000Z"
+      completed_at: "2026-02-25T12:30:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "front-end-spec.md"
+          path: "docs/front-end-spec.md"
+          status: created
+
+    ux-generate-v0-prompt:
+      status: skipped
+      skipped_at: "2026-02-25T12:30:30.000Z"
+
+    architect-create-architecture:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:31:00.000Z"
+      completed_at: "2026-02-25T12:40:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "fullstack-architecture.md"
+          path: "docs/fullstack-architecture.md"
+          status: created
+
+    pm-update-prd:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T12:41:00.000Z"
+      completed_at: "2026-02-25T13:00:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "prd.md"
+          path: "docs/prd.md"
+          status: updated
+
+    po-validate-artifacts:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T13:01:00.000Z"
+      completed_at: "2026-02-25T13:30:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "po-validation-report.md"
+          path: "docs/po-validation-report.md"
+          status: created
+
+    po-delegate-fixes:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T13:31:00.000Z"
+      completed_at: "2026-02-25T13:45:00.000Z"
+      retries: 0
+      fixes_applied:
+        - "Architecture metadata: PRD v2.0 → v2.1"
+        - "Architecture ER diagram: 21 → 26 tables (added forecast_metrica, forecast_modelo, sku_classification, serie_temporal relationships)"
+        - "Architecture table groups: updated Results count 6→8, added Classification group"
+        - "Frontend spec metadata: PRD v2.0 → v2.1"
+      deferred:
+        - "5 open frontend design questions → deferred to Epic 1 story drafting"
+      artifacts:
+        - name: "fullstack-architecture.md"
+          path: "docs/fullstack-architecture.md"
+          status: updated
+        - name: "front-end-spec.md"
+          path: "docs/front-end-spec.md"
+          status: updated
+
+    po-shard-documents:
+      status: completed
+      score: null
+      spawned_at: "2026-02-25T13:46:00.000Z"
+      completed_at: "2026-02-25T14:00:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "prd/ (12 shards)"
+          path: "docs/prd/"
+          status: created
+        - name: "architecture/ (15 shards + 3 extra)"
+          path: "docs/architecture/"
+          status: created
+
+    po-epic-retrospective-2:
+      status: completed
+      score: null
+      spawned_at: "2026-02-26T21:00:00.000Z"
+      completed_at: "2026-02-26T21:05:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "epic-2-retrospective.md"
+          path: "docs/retrospectives/epic-2-retrospective.md"
+          status: created
+
+  step_outputs_epic3_retro:
+    po-epic-retrospective-3:
+      epic_id: 3
+      epic_name: "MRP — Planning Engine"
+      verdict: "APPROVED"
+      stories_delivered: 12
+      acceptance_criteria_met: "134/134"
+      tasks_completed: "129/129"
+      source_files_created: 153
+      test_files_created: 27
+      total_tests: 462
+      technical_debt_items: 9
+      risks_mitigated: 8
+      retrospective_path: "docs/retrospectives/epic-3-retrospective.md"
+      recommendations:
+        - "Commit all Epic 0-3 work with granular git commits"
+        - "Add integration tests with Testcontainers"
+        - "Add Swagger/OpenAPI documentation"
+        - "Add E2E tests for full workflow"
+        - "Implement WebSocket gateway for real-time progress"
+        - "Validate Docker Compose full stack"
+        - "Add dashboard pagination for production datasets"
+        - "Plan BI data warehouse strategy for Epic 4"
+        - "Consider BullMQ for scheduled pipelines"
+        - "Extract shared chart utilities"
+
+  step_results_epic3_retro:
+    po-epic-retrospective-3:
+      status: completed
+      score: null
+      spawned_at: "2026-02-27T13:30:00.000Z"
+      completed_at: "2026-02-27T14:00:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "epic-3-retrospective.md"
+          path: "docs/retrospectives/epic-3-retrospective.md"
+          status: created
+
+  step_outputs_epic4_retro:
+    po-epic-retrospective-4:
+      epic_id: 4
+      epic_name: "Automation & BI"
+      verdict: "APPROVED"
+      stories_delivered: 10
+      acceptance_criteria_met: "196/196"
+      tasks_completed: "80/80"
+      source_files_created: 140
+      test_files_created: 30
+      total_tests: 386
+      technical_debt_items: 7
+      risks_mitigated: 6
+      retrospective_path: "docs/retrospectives/epic-4-retrospective.md"
+      recommendations:
+        - "Commit all Epic 0-4 work with granular git commits"
+        - "Add integration tests with Testcontainers"
+        - "Add Swagger/OpenAPI documentation"
+        - "Install Puppeteer for production PDF generation"
+        - "Implement WebSocket for real-time pipeline progress"
+        - "Configure branch protection on GitHub"
+        - "Validate Docker Compose full stack startup"
+        - "Consider materialized views for dashboard queries"
+        - "Plan AWS EKS deployment strategy"
+        - "Extract shared ExcelJS utilities"
+  step_results_epic4_retro:
+    po-epic-retrospective-4:
+      status: completed
+      score: null
+      spawned_at: "2026-02-28T20:00:00.000Z"
+      completed_at: "2026-02-28T20:05:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "epic-4-retrospective.md"
+          path: "docs/retrospectives/epic-4-retrospective.md"
+          status: created
+  step_outputs_epic5_retro:
+    po-epic-retrospective-5:
+      epic_id: 5
+      epic_name: "Refinement & Production"
+      verdict: "APPROVED"
+      stories_delivered: 10
+      acceptance_criteria_met: "158/158"
+      tasks_completed: "50/50"
+      source_files_created: 66
+      source_files_modified: 45
+      test_files_created: 12
+      total_backend_tests: 166
+      total_python_tests: 16
+      total_frontend_tests: 56
+      total_load_test_scripts: 3
+      total_k8s_manifests: 10
+      total_tests: 241
+      code_review_fixes: 33
+      technical_debt_items: 7
+      retrospective_path: "docs/retrospectives/epic-5-retrospective.md"
+      recommendations:
+        - "Commit all Epic 0-5 work with granular git commits"
+        - "Migrate K8s manifests to Helm charts"
+        - "Add ExternalSecrets operator for AWS Secrets Manager"
+        - "Add Swagger/OpenAPI documentation"
+        - "Add Testcontainers for real database integration tests"
+        - "Update CI/CD pipeline with K8s deployment steps"
+        - "Add Prometheus/Grafana monitoring stack"
+        - "Run security audit before production deployment"
+        - "Establish performance baseline with k6 on staging"
+        - "Consider Helm or Kustomize for environment-specific K8s overrides"
+  step_results_epic5_retro:
+    po-epic-retrospective-5:
+      status: completed
+      score: null
+      spawned_at: "2026-02-28T23:30:00.000Z"
+      completed_at: "2026-02-28T23:35:00.000Z"
+      retries: 0
+      artifacts:
+        - name: "epic-5-retrospective.md"
+          path: "docs/retrospectives/epic-5-retrospective.md"
+          status: created
+  step_outputs_epic2_retro:
+    po-epic-retrospective-2:
+      epic_id: 2
+      epic_name: "Intelligence — Forecasting Engine"
+      verdict: "APPROVED"
+      stories_delivered: 10
+      acceptance_criteria_met: "94/94"
+      tasks_completed: "112/112"
+      source_files_created: 60
+      test_files_created: 22
+      total_tests: 239
+      technical_debt_items: 9
+      risks_mitigated: 8
+      retrospective_path: "docs/retrospectives/epic-2-retrospective.md"
+
+  decisions:
+    - step: "ux-generate-v0-prompt"
+      condition: "user_wants_ai_generation"
+      evaluated_value: false
+      route_chosen: "skip"
+      action: "continue"
+      timestamp: "2026-02-25T12:30:30.000Z"
+    - step: "pm-update-prd"
+      condition: "architecture_suggests_prd_changes"
+      evaluated_value: true
+      route_chosen: "execute"
+      action: "continue"
+      timestamp: "2026-02-25T12:41:00.000Z"
+    - step: "po-delegate-fixes"
+      condition: "po_checklist_issues"
+      evaluated_value: true
+      route_chosen: "execute"
+      action: "continue"
+      timestamp: "2026-02-25T13:31:00.000Z"
+
+  elicitation_responses:
+    devops-environment-bootstrap:
+      project_name: "forecasting-mrp"
+      project_path: "C:\\Users\\Berge\\OneDrive\\Documentos\\Sistema de planejamento"
+      github_repo: "private"
+      package_manager: "pnpm"
+
+  sequence_map:
+    0: { type: phase, phase: 0, name: "Environment Bootstrap" }
+    1: { type: action, id: "devops-environment-bootstrap", agent: "devops" }
+    2: { type: phase, phase: 1, name: "Discovery & Planning" }
+    3: { type: action, id: "analyst-project-brief", agent: "analyst" }
+    4: { type: action, id: "pm-create-prd", agent: "pm" }
+    5: { type: action, id: "ux-create-frontend-spec", agent: "ux-design-expert" }
+    6: { type: action, id: "ux-generate-v0-prompt", agent: "ux-design-expert", conditional: true }
+    7: { type: action, id: "architect-create-architecture", agent: "architect" }
+    8: { type: action, id: "pm-update-prd", agent: "pm", conditional: true }
+    9: { type: action, id: "po-validate-artifacts", agent: "po" }
+    10: { type: action, id: "po-delegate-fixes", agent: "po", conditional: true }
+    11: { type: guidance, id: "project-setup-guidance" }
+    12: { type: guidance, id: "development-order-guidance" }
+    13: { type: phase, phase: 2, name: "Document Sharding" }
+    14: { type: action, id: "po-shard-documents", agent: "po" }
+    15: { type: phase, phase: 3, name: "Development Cycle" }
+    16: { type: action, id: "sm-create-story", agent: "sm" }
+    17: { type: action, id: "pm-review-draft-story", agent: "pm", optional: true }
+    18: { type: action, id: "dev-implement-story", agent: "dev" }
+    19: { type: action, id: "qa-review-implementation", agent: "qa", optional: true }
+    20: { type: action, id: "dev-address-qa-feedback", agent: "dev", conditional: true }
+    21: { type: repeat, target: "sm-create-story" }
+    22: { type: action, id: "po-epic-retrospective", agent: "po", optional: true }
+    23: { type: end }

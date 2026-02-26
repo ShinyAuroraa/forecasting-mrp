@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forecast-engine-svc
+  namespace: forecasting-mrp
+  labels:
+    app: forecast-engine
+    app.kubernetes.io/part-of: forecasting-mrp
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: forecast-engine
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forecast-engine
+  namespace: forecasting-mrp
+  labels:
+    app: forecast-engine
+    app.kubernetes.io/part-of: forecasting-mrp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forecast-engine
+  template:
+    metadata:
+      labels:
+        app: forecast-engine
+    spec:
+      # AC-10: GPU Spot Instance node selector
+      nodeSelector:
+        node.kubernetes.io/instance-type: g5.xlarge
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "kubernetes.io/spot"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 90
+              preference:
+                matchExpressions:
+                  - key: "eks.amazonaws.com/capacityType"
+                    operator: In
+                    values: ["SPOT"]
+            - weight: 10
+              preference:
+                matchExpressions:
+                  - key: "eks.amazonaws.com/capacityType"
+                    operator: In
+                    values: ["ON_DEMAND"]
+      containers:
+        - name: forecast-engine
+          image: forecasting-mrp/forecast-engine:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: forecasting-mrp-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: forecasting-mrp-secrets
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: forecasting-mrp-secrets
+                  key: REDIS_URL
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: 8Gi
+              nvidia.com/gpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30

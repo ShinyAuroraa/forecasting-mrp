@@ -5,4 +5,4 @@
  * This package is consumed by both @forecasting-mrp/web and @forecasting-mrp/api.
  */
 
-export {};
+export * from './types/enums';
