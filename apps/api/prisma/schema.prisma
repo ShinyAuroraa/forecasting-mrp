@@ -1,0 +1,881 @@
+// ============================================
+// ForecastingMRP — Prisma Schema
+// 26 tables, 24 enums, full PRD data model
+// ============================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum TipoProduto {
+  ACABADO
+  SEMI_ACABADO
+  INSUMO
+  EMBALAGEM
+  MATERIA_PRIMA
+  REVENDA
+}
+
+enum PoliticaRessuprimento {
+  PONTO_PEDIDO
+  MIN_MAX
+  REVISAO_PERIODICA
+  KANBAN
+}
+
+enum FonteAtualizacao {
+  MANUAL
+  ERP_SYNC
+  CONTAGEM
+  UPLOAD
+}
+
+enum TipoDeposito {
+  MATERIA_PRIMA
+  PRODUTO_ACABADO
+  WIP
+  EXPEDICAO
+  QUARENTENA
+}
+
+enum TipoCentroTrabalho {
+  PRODUCAO
+  EMBALAGEM
+  MONTAGEM
+  ACABAMENTO
+  CONTROLE_QUALIDADE
+}
+
+enum TipoParadaProgramada {
+  MANUTENCAO
+  FERIAS_COLETIVAS
+  SETUP
+  LIMPEZA
+  OUTRO
+}
+
+enum TipoEventoCapacidade {
+  NOVO_MAQUINARIO
+  QUEBRA
+  REPARO
+  MUDANCA_TURNO
+  MUDANCA_EFICIENCIA
+  AUMENTO_CAPACIDADE
+  REDUCAO_CAPACIDADE
+}
+
+enum TipoCalendarioFabrica {
+  UTIL
+  FERIADO
+  PONTO_FACULTATIVO
+  FERIAS_COLETIVAS
+  SABADO
+  DOMINGO
+}
+
+enum TipoExecucao {
+  FORECAST
+  MRP
+  COMPLETO
+  CICLO_DIARIO
+  CICLO_SEMANAL
+  CICLO_MENSAL
+  PIPELINE_DIARIO
+}
+
+enum StatusExecucao {
+  PENDENTE
+  EXECUTANDO
+  CONCLUIDO
+  ERRO
+  PARCIAL
+}
+
+enum GatilhoExecucao {
+  MANUAL
+  AGENDADO
+  AUTO_INGESTAO
+}
+
+enum ModeloForecast {
+  TFT
+  ETS
+  CROSTON
+  LGBM
+  ENSEMBLE
+}
+
+enum TargetType {
+  VOLUME
+  FATURAMENTO
+}
+
+enum Granularidade {
+  diario
+  semanal
+  mensal
+}
+
+enum PadraoDemanda {
+  REGULAR
+  INTERMITENTE
+  ERRATICO
+  LUMPY
+}
+
+enum ClasseABC {
+  A
+  B
+  C
+}
+
+enum ClasseXYZ {
+  X
+  Y
+  Z
+}
+
+enum TipoOrdem {
+  COMPRA
+  PRODUCAO
+}
+
+enum StatusOrdem {
+  PLANEJADA
+  FIRME
+  LIBERADA
+  CANCELADA
+}
+
+enum PrioridadeOrdem {
+  CRITICA
+  ALTA
+  MEDIA
+  BAIXA
+}
+
+enum Lotificacao {
+  L4L
+  EOQ
+  SILVER_MEAL
+  WAGNER_WHITIN
+}
+
+enum SugestaoCapacidade {
+  OK
+  HORA_EXTRA
+  ANTECIPAR
+  SUBCONTRATAR
+}
+
+enum UserRole {
+  admin
+  manager
+  operator
+  viewer
+}
+
+enum TipoFonte {
+  CSV
+  XLSX
+  API
+  DB
+}
+
+enum MetodoCalculo {
+  TFT_QUANTIL
+  FORMULA_CLASSICA
+  MONTE_CARLO
+}
+
+// ============================================
+// REGISTRATION TABLES
+// ============================================
+
+model Produto {
+  id                       String                @id @default(uuid())
+  codigo                   String                @unique @db.VarChar(50)
+  descricao                String                @db.VarChar(255)
+  tipoProduto              TipoProduto           @map("tipo_produto")
+  categoriaId              String?               @map("categoria_id")
+  unidadeMedidaId          String?               @map("unidade_medida_id")
+  pesoLiquidoKg            Decimal?              @map("peso_liquido_kg") @db.Decimal(10, 4)
+  volumeM3                 Decimal?              @map("volume_m3") @db.Decimal(10, 6)
+  ativo                    Boolean               @default(true)
+  custoUnitario            Decimal?              @map("custo_unitario") @db.Decimal(12, 4)
+  custoPedido              Decimal?              @map("custo_pedido") @db.Decimal(12, 4)
+  custoManutencaoPctAno    Decimal?              @default(25.00) @map("custo_manutencao_pct_ano") @db.Decimal(5, 2)
+  precoVenda               Decimal?              @map("preco_venda") @db.Decimal(12, 4)
+  politicaRessuprimento    PoliticaRessuprimento @default(PONTO_PEDIDO) @map("politica_ressuprimento")
+  intervaloRevisaoDias     Int?                  @map("intervalo_revisao_dias")
+  loteMinimo               Decimal?              @default(1) @map("lote_minimo") @db.Decimal(12, 4)
+  multiploCompra           Decimal?              @default(1) @map("multiplo_compra") @db.Decimal(12, 4)
+  estoqueSegurancaManual   Decimal?              @map("estoque_seguranca_manual") @db.Decimal(12, 4)
+  leadTimeProducaoDias     Int?                  @map("lead_time_producao_dias")
+  createdAt                DateTime              @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt                DateTime              @updatedAt @map("updated_at") @db.Timestamptz()
+
+  categoria          Categoria?          @relation(fields: [categoriaId], references: [id])
+  unidadeMedida      UnidadeMedida?      @relation(fields: [unidadeMedidaId], references: [id])
+  bomPai             Bom[]               @relation("BomPai")
+  bomFilho           Bom[]               @relation("BomFilho")
+  produtoFornecedor  ProdutoFornecedor[]
+  inventarioAtual    InventarioAtual[]
+  roteiroProducao    RoteiroProducao[]
+  forecastResultado  ForecastResultado[]
+  forecastMetrica    ForecastMetrica[]
+  forecastOverride   ForecastOverride[]
+  skuClassification  SkuClassification?
+  serieTemporal      SerieTemporal[]
+  parametrosEstoque  ParametrosEstoque[]
+  ordemPlanejada     OrdemPlanejada[]
+
+  @@index([tipoProduto, ativo], map: "idx_produto_tipo_ativo")
+  @@index([categoriaId], map: "idx_produto_categoria")
+  @@map("produto")
+}
+
+model Categoria {
+  id        String      @id @default(uuid())
+  nome      String      @db.VarChar(100)
+  descricao String?     @db.Text
+  paiId     String?     @map("pai_id")
+
+  pai       Categoria?  @relation("CategoriaHierarquia", fields: [paiId], references: [id])
+  filhos    Categoria[] @relation("CategoriaHierarquia")
+  produtos  Produto[]
+
+  @@map("categoria")
+}
+
+model UnidadeMedida {
+  id             String    @id @default(uuid())
+  sigla          String    @unique @db.VarChar(10)
+  nome           String    @db.VarChar(50)
+  fatorConversao Decimal   @default(1) @map("fator_conversao") @db.Decimal(12, 6)
+
+  produtos Produto[]
+  bom      Bom[]
+
+  @@map("unidade_medida")
+}
+
+model Fornecedor {
+  id                 String              @id @default(uuid())
+  codigo             String              @unique @db.VarChar(50)
+  razaoSocial        String              @map("razao_social") @db.VarChar(255)
+  nomeFantasia       String?             @map("nome_fantasia") @db.VarChar(255)
+  cnpj               String?             @db.VarChar(18)
+  email              String?             @db.VarChar(255)
+  telefone           String?             @db.VarChar(20)
+  cidade             String?             @db.VarChar(100)
+  estado             String?             @db.VarChar(2)
+  leadTimePadraoDias Int?                @map("lead_time_padrao_dias")
+  leadTimeMinDias    Int?                @map("lead_time_min_dias")
+  leadTimeMaxDias    Int?                @map("lead_time_max_dias")
+  confiabilidadePct  Decimal?            @default(90.00) @map("confiabilidade_pct") @db.Decimal(5, 2)
+  avaliacao          Int?                @default(3) @db.SmallInt
+  ativo              Boolean             @default(true)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamptz()
+
+  produtoFornecedor ProdutoFornecedor[]
+  ordemPlanejada    OrdemPlanejada[]
+
+  @@map("fornecedor")
+}
+
+model ProdutoFornecedor {
+  id             String    @id @default(uuid())
+  produtoId      String    @map("produto_id")
+  fornecedorId   String    @map("fornecedor_id")
+  leadTimeDias   Int?      @map("lead_time_dias")
+  precoUnitario  Decimal?  @map("preco_unitario") @db.Decimal(12, 4)
+  moq            Decimal?  @default(1) @db.Decimal(12, 4)
+  multiploCompra Decimal?  @default(1) @map("multiplo_compra") @db.Decimal(12, 4)
+  isPrincipal    Boolean   @default(false) @map("is_principal")
+  ultimaCompra   DateTime? @map("ultima_compra") @db.Timestamptz()
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  produto             Produto              @relation(fields: [produtoId], references: [id])
+  fornecedor          Fornecedor           @relation(fields: [fornecedorId], references: [id])
+  historicoLeadTimes  HistoricoLeadTime[]
+
+  @@unique([produtoId, fornecedorId])
+  @@map("produto_fornecedor")
+}
+
+model HistoricoLeadTime {
+  id                    String             @id @default(uuid())
+  produtoFornecedorId   String             @map("produto_fornecedor_id")
+  leadTimeRealDias      Int                @map("lead_time_real_dias")
+  leadTimePlanejadoDias Int?               @map("lead_time_planejado_dias")
+  dataEntrega           DateTime           @map("data_entrega") @db.Date
+  pedidoRef             String?            @map("pedido_ref") @db.VarChar(100)
+  observacao            String?            @db.Text
+  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamptz()
+
+  produtoFornecedor ProdutoFornecedor @relation(fields: [produtoFornecedorId], references: [id])
+
+  @@index([produtoFornecedorId, dataEntrega], map: "idx_historico_lt_pf_data")
+  @@map("historico_lead_time")
+}
+
+model Bom {
+  id              String    @id @default(uuid())
+  produtoPaiId    String    @map("produto_pai_id")
+  produtoFilhoId  String    @map("produto_filho_id")
+  quantidade      Decimal   @db.Decimal(12, 6)
+  unidadeMedidaId String?   @map("unidade_medida_id")
+  perdaPercentual Decimal?  @default(0) @map("perda_percentual") @db.Decimal(5, 2)
+  nivel           Int?      @db.SmallInt
+  observacao      String?   @db.Text
+  versao          Int       @default(1)
+  ativo           Boolean   @default(true)
+  validoDesde     DateTime? @map("valido_desde") @db.Date
+  validoAte       DateTime? @map("valido_ate") @db.Date
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  produtoPai    Produto        @relation("BomPai", fields: [produtoPaiId], references: [id])
+  produtoFilho  Produto        @relation("BomFilho", fields: [produtoFilhoId], references: [id])
+  unidadeMedida UnidadeMedida? @relation(fields: [unidadeMedidaId], references: [id])
+
+  @@unique([produtoPaiId, produtoFilhoId, versao], map: "uq_bom_pai_filho_versao")
+  @@index([produtoPaiId, ativo], map: "idx_bom_pai_ativo")
+  @@index([produtoFilhoId], map: "idx_bom_filho")
+  @@index([produtoPaiId, versao], map: "idx_bom_pai_versao")
+  @@map("bom")
+}
+
+model Deposito {
+  id                  String       @id @default(uuid())
+  codigo              String       @unique @db.VarChar(50)
+  nome                String       @db.VarChar(100)
+  tipo                TipoDeposito
+  capacidadeM3        Decimal?     @map("capacidade_m3") @db.Decimal(10, 2)
+  capacidadePosicoes  Int?         @map("capacidade_posicoes")
+  capacidadeKg        Decimal?     @map("capacidade_kg") @db.Decimal(12, 2)
+  temperaturaMin      Decimal?     @map("temperatura_min") @db.Decimal(5, 2)
+  temperaturaMax      Decimal?     @map("temperatura_max") @db.Decimal(5, 2)
+  endereco            String?      @db.Text
+  ativo               Boolean      @default(true)
+
+  inventarioAtual InventarioAtual[]
+
+  @@map("deposito")
+}
+
+model InventarioAtual {
+  id                      String           @id @default(uuid())
+  produtoId               String           @map("produto_id")
+  depositoId              String           @map("deposito_id")
+  quantidadeDisponivel    Decimal          @default(0) @map("quantidade_disponivel") @db.Decimal(12, 4)
+  quantidadeReservada     Decimal          @default(0) @map("quantidade_reservada") @db.Decimal(12, 4)
+  quantidadeEmTransito    Decimal          @default(0) @map("quantidade_em_transito") @db.Decimal(12, 4)
+  quantidadeEmQuarentena  Decimal          @default(0) @map("quantidade_em_quarentena") @db.Decimal(12, 4)
+  lote                    String?          @db.VarChar(50)
+  dataValidade            DateTime?        @map("data_validade") @db.Date
+  dataUltimaContagem      DateTime?        @map("data_ultima_contagem") @db.Date
+  custoMedioUnitario      Decimal?         @map("custo_medio_unitario") @db.Decimal(12, 4)
+  fonteAtualizacao        FonteAtualizacao @default(MANUAL) @map("fonte_atualizacao")
+  updatedAt               DateTime         @updatedAt @map("updated_at") @db.Timestamptz()
+
+  produto  Produto  @relation(fields: [produtoId], references: [id])
+  deposito Deposito @relation(fields: [depositoId], references: [id])
+
+  @@unique([produtoId, depositoId, lote])
+  @@index([produtoId, depositoId], map: "idx_inv_produto_deposito")
+  @@map("inventario_atual")
+}
+
+// ============================================
+// CAPACITY TABLES
+// ============================================
+
+model CentroTrabalho {
+  id                     String             @id @default(uuid())
+  codigo                 String             @unique @db.VarChar(50)
+  nome                   String             @db.VarChar(100)
+  tipo                   TipoCentroTrabalho
+  descricao              String?            @db.Text
+  capacidadeHoraUnidades Decimal?           @map("capacidade_hora_unidades") @db.Decimal(10, 2)
+  numOperadores          Int?               @map("num_operadores")
+  eficienciaPercentual   Decimal?           @default(100) @map("eficiencia_percentual") @db.Decimal(5, 2)
+  tempoSetupMinutos      Decimal?           @default(0) @map("tempo_setup_minutos") @db.Decimal(8, 2)
+  custoHora              Decimal?           @map("custo_hora") @db.Decimal(10, 2)
+  ativo                  Boolean            @default(true)
+  observacoes            String?            @db.Text
+  createdAt              DateTime           @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt              DateTime           @updatedAt @map("updated_at") @db.Timestamptz()
+
+  turnos             Turno[]
+  paradasProgramadas ParadaProgramada[]
+  eventosCapacidade  EventoCapacidade[]
+  roteiroProducao    RoteiroProducao[]
+  ordemPlanejada     OrdemPlanejada[]
+  cargaCapacidade    CargaCapacidade[]
+
+  @@map("centro_trabalho")
+}
+
+model Turno {
+  id               String    @id @default(uuid())
+  centroTrabalhoId String    @map("centro_trabalho_id")
+  nome             String    @db.VarChar(50)
+  horaInicio       DateTime  @map("hora_inicio") @db.Time()
+  horaFim          DateTime  @map("hora_fim") @db.Time()
+  diasSemana       Int[]     @map("dias_semana")
+  ativo            Boolean   @default(true)
+  validoDesde      DateTime? @map("valido_desde") @db.Date
+  validoAte        DateTime? @map("valido_ate") @db.Date
+
+  centroTrabalho CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+
+  @@map("turno")
+}
+
+model ParadaProgramada {
+  id               String               @id @default(uuid())
+  centroTrabalhoId String               @map("centro_trabalho_id")
+  tipo             TipoParadaProgramada
+  dataInicio       DateTime             @map("data_inicio") @db.Timestamptz()
+  dataFim          DateTime             @map("data_fim") @db.Timestamptz()
+  motivo           String?              @db.Text
+  recorrente       Boolean              @default(false)
+  cronExpression   String?              @map("cron_expression") @db.VarChar(100)
+
+  centroTrabalho CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+
+  @@map("parada_programada")
+}
+
+model EventoCapacidade {
+  id                  String               @id @default(uuid())
+  centroTrabalhoId    String               @map("centro_trabalho_id")
+  tipo                TipoEventoCapacidade
+  dataEvento          DateTime             @map("data_evento") @db.Timestamptz()
+  campoAlterado       String?              @map("campo_alterado") @db.VarChar(50)
+  valorAnterior       String?              @map("valor_anterior") @db.VarChar(100)
+  valorNovo           String?              @map("valor_novo") @db.VarChar(100)
+  motivo              String?              @db.Text
+  previsaoResolucao   DateTime?            @map("previsao_resolucao") @db.Date
+  usuarioId           String?              @map("usuario_id")
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz()
+
+  centroTrabalho CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+  usuario        Usuario?       @relation(fields: [usuarioId], references: [id])
+
+  @@map("evento_capacidade")
+}
+
+model RoteiroProducao {
+  id                   String  @id @default(uuid())
+  produtoId            String  @map("produto_id")
+  centroTrabalhoId     String  @map("centro_trabalho_id")
+  sequencia            Int     @db.SmallInt
+  operacao             String  @db.VarChar(100)
+  tempoSetupMinutos    Decimal @default(0) @map("tempo_setup_minutos") @db.Decimal(8, 2)
+  tempoUnitarioMinutos Decimal @map("tempo_unitario_minutos") @db.Decimal(8, 4)
+  tempoEsperaMinutos   Decimal @default(0) @map("tempo_espera_minutos") @db.Decimal(8, 2)
+  descricao            String? @db.Text
+  ativo                Boolean @default(true)
+
+  produto        Produto        @relation(fields: [produtoId], references: [id])
+  centroTrabalho CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+
+  @@map("roteiro_producao")
+}
+
+model CalendarioFabrica {
+  id              String                @id @default(uuid())
+  data            DateTime              @unique @db.Date
+  tipo            TipoCalendarioFabrica
+  descricao       String?               @db.VarChar(100)
+  horasProdutivas Decimal               @default(0) @map("horas_produtivas") @db.Decimal(4, 2)
+
+  @@map("calendario_fabrica")
+}
+
+// ============================================
+// RESULT TABLES
+// ============================================
+
+model ExecucaoPlanejamento {
+  id              String          @id @default(uuid())
+  tipo            TipoExecucao
+  status          StatusExecucao  @default(PENDENTE)
+  gatilho         GatilhoExecucao
+  parametros      Json?           @db.JsonB
+  resultadoResumo Json?           @map("resultado_resumo") @db.JsonB
+  startedAt       DateTime?       @map("started_at") @db.Timestamptz()
+  completedAt     DateTime?       @map("completed_at") @db.Timestamptz()
+  errorMessage    String?         @map("error_message") @db.Text
+  createdBy       String?         @map("created_by")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz()
+
+  usuario            Usuario?            @relation(fields: [createdBy], references: [id])
+  stepLogs           ExecucaoStepLog[]
+  forecastResultados ForecastResultado[]
+  forecastMetricas   ForecastMetrica[]
+  forecastModelos    ForecastModelo[]
+  parametrosEstoque  ParametrosEstoque[]
+  ordensPlanejadas   OrdemPlanejada[]
+  cargasCapacidade   CargaCapacidade[]
+
+  @@index([tipo, status], map: "idx_exec_tipo_status")
+  @@map("execucao_planejamento")
+}
+
+model ExecucaoStepLog {
+  id               BigInt    @id @default(autoincrement())
+  execucaoId       String    @map("execucao_id")
+  stepName         String    @map("step_name") @db.VarChar(50)
+  stepOrder        Int       @map("step_order") @db.SmallInt
+  status           String    @db.VarChar(20)
+  recordsProcessed BigInt?   @map("records_processed")
+  durationMs       Int?      @map("duration_ms")
+  details          Json?     @db.JsonB
+  startedAt        DateTime? @map("started_at") @db.Timestamptz()
+  completedAt      DateTime? @map("completed_at") @db.Timestamptz()
+
+  execucao ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+
+  @@map("execucao_step_log")
+}
+
+model ForecastResultado {
+  id               String         @id @default(uuid())
+  execucaoId       String         @map("execucao_id")
+  produtoId        String         @map("produto_id")
+  periodo          DateTime       @db.Date
+  horizonteSemanas Int            @map("horizonte_semanas")
+  modeloUsado      ModeloForecast @map("modelo_usado")
+  targetType       TargetType     @map("target_type")
+  p10              Decimal?       @db.Decimal(14, 4)
+  p25              Decimal?       @db.Decimal(14, 4)
+  p50              Decimal?       @db.Decimal(14, 4)
+  p75              Decimal?       @db.Decimal(14, 4)
+  p90              Decimal?       @db.Decimal(14, 4)
+  faturamentoP50   Decimal?       @map("faturamento_p50") @db.Decimal(14, 4)
+  faturamentoP10   Decimal?       @map("faturamento_p10") @db.Decimal(14, 4)
+  faturamentoP90   Decimal?       @map("faturamento_p90") @db.Decimal(14, 4)
+
+  execucao ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+  produto  Produto              @relation(fields: [produtoId], references: [id])
+  overrides ForecastOverride[]
+
+  @@index([execucaoId, produtoId], map: "idx_forecast_exec_produto")
+  @@index([periodo], map: "idx_forecast_periodo")
+  @@map("forecast_resultado")
+}
+
+model ForecastMetrica {
+  id         String   @id @default(uuid())
+  execucaoId String   @map("execucao_id")
+  produtoId  String   @map("produto_id")
+  modelo     String   @db.VarChar(50)
+  mape       Decimal? @db.Decimal(8, 4)
+  mae        Decimal? @db.Decimal(12, 4)
+  rmse       Decimal? @db.Decimal(12, 4)
+  bias       Decimal? @db.Decimal(8, 4)
+  classeAbc  String?  @map("classe_abc") @db.Char(1)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  execucao ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+  produto  Produto              @relation(fields: [produtoId], references: [id])
+
+  @@map("forecast_metrica")
+}
+
+model ForecastModelo {
+  id             String    @id @default(uuid())
+  execucaoId     String    @map("execucao_id")
+  tipoModelo     String    @map("tipo_modelo") @db.VarChar(50)
+  versao         Int
+  parametros     Json?     @db.JsonB
+  metricasTreino Json?     @map("metricas_treino") @db.JsonB
+  arquivoPath    String?   @map("arquivo_path") @db.VarChar(500)
+  isChampion     Boolean   @default(false) @map("is_champion")
+  treinadoEm     DateTime? @map("treinado_em") @db.Timestamptz()
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  execucao ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+
+  @@map("forecast_modelo")
+}
+
+enum CategoriaOverride {
+  SEASONAL
+  PROMOTION
+  SUPPLY_DISRUPTION
+  MARKET_INTELLIGENCE
+  OTHER
+}
+
+model ForecastOverride {
+  id                   String            @id @default(uuid())
+  forecastResultadoId  String?           @map("forecast_resultado_id")
+  produtoId            String            @map("produto_id")
+  periodo              DateTime          @db.Date
+  originalP50          Decimal?          @map("original_p50") @db.Decimal(14, 4)
+  overrideP50          Decimal           @map("override_p50") @db.Decimal(14, 4)
+  motivo               String            @db.Text
+  categoriaOverride    CategoriaOverride @map("categoria_override")
+  revertedFromId       String?           @map("reverted_from_id")
+  createdBy            String?           @map("created_by")
+  createdAt            DateTime          @default(now()) @map("created_at") @db.Timestamptz()
+
+  forecastResultado ForecastResultado? @relation(fields: [forecastResultadoId], references: [id])
+  produto           Produto            @relation(fields: [produtoId], references: [id])
+  usuario           Usuario?           @relation("OverrideUsuario", fields: [createdBy], references: [id])
+  revertedFrom      ForecastOverride?  @relation("OverrideRevert", fields: [revertedFromId], references: [id])
+  reversions        ForecastOverride[] @relation("OverrideRevert")
+
+  @@index([produtoId, periodo], map: "idx_override_produto_periodo")
+  @@index([createdAt], map: "idx_override_created")
+  @@map("forecast_override")
+}
+
+model SkuClassification {
+  id                     String        @id @default(uuid())
+  produtoId              String        @unique @map("produto_id")
+  classeAbc              ClasseABC     @map("classe_abc")
+  classeXyz              ClasseXYZ     @map("classe_xyz")
+  padraoDemanda          PadraoDemanda @map("padrao_demanda")
+  modeloForecastSugerido String?       @map("modelo_forecast_sugerido") @db.VarChar(50)
+  percentualReceita      Decimal?      @map("percentual_receita") @db.Decimal(6, 4)
+  cvDemanda              Decimal?      @map("cv_demanda") @db.Decimal(6, 4)
+  calculadoEm            DateTime?     @map("calculado_em") @db.Timestamptz()
+  createdAt              DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt              DateTime      @updatedAt @map("updated_at") @db.Timestamptz()
+
+  produto Produto @relation(fields: [produtoId], references: [id])
+
+  @@map("sku_classification")
+}
+
+model SerieTemporal {
+  id             String        @id @default(uuid())
+  produtoId      String        @map("produto_id")
+  dataReferencia DateTime      @map("data_referencia") @db.Date
+  granularidade  Granularidade @default(semanal)
+  volume         Decimal       @default(0) @db.Decimal(14, 4)
+  receita        Decimal       @default(0) @db.Decimal(14, 4)
+  fonte          String?       @db.VarChar(30)
+  qualidade      Decimal?      @db.Decimal(4, 2)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+
+  produto Produto @relation(fields: [produtoId], references: [id])
+
+  @@unique([produtoId, dataReferencia, granularidade])
+  @@map("serie_temporal")
+}
+
+model ParametrosEstoque {
+  id                 String        @id @default(uuid())
+  execucaoId         String        @map("execucao_id")
+  produtoId          String        @map("produto_id")
+  safetyStock        Decimal?      @map("safety_stock") @db.Decimal(12, 4)
+  reorderPoint       Decimal?      @map("reorder_point") @db.Decimal(12, 4)
+  estoqueMinimo      Decimal?      @map("estoque_minimo") @db.Decimal(12, 4)
+  estoqueMaximo      Decimal?      @map("estoque_maximo") @db.Decimal(12, 4)
+  eoq                Decimal?      @db.Decimal(12, 4)
+  diasCoberturaAtual Decimal?      @map("dias_cobertura_atual") @db.Decimal(8, 2)
+  metodoCalculo      MetodoCalculo @map("metodo_calculo")
+  nivelServicoUsado  Decimal?      @map("nivel_servico_usado") @db.Decimal(5, 4)
+  calculatedAt       DateTime?     @map("calculated_at") @db.Timestamptz()
+
+  execucao ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+  produto  Produto              @relation(fields: [produtoId], references: [id])
+
+  @@map("parametros_estoque")
+}
+
+model OrdemPlanejada {
+  id                      String             @id @default(uuid())
+  execucaoId              String             @map("execucao_id")
+  produtoId               String             @map("produto_id")
+  tipo                    TipoOrdem
+  quantidade              Decimal            @db.Decimal(12, 4)
+  dataNecessidade         DateTime           @map("data_necessidade") @db.Date
+  dataLiberacao           DateTime           @map("data_liberacao") @db.Date
+  dataRecebimentoEsperado DateTime?          @map("data_recebimento_esperado") @db.Date
+  fornecedorId            String?            @map("fornecedor_id")
+  centroTrabalhoId        String?            @map("centro_trabalho_id")
+  custoEstimado           Decimal?           @map("custo_estimado") @db.Decimal(14, 4)
+  lotificacaoUsada        Lotificacao?       @map("lotificacao_usada")
+  prioridade              PrioridadeOrdem
+  status                  StatusOrdem        @default(PLANEJADA)
+  mensagemAcao            String?            @map("mensagem_acao") @db.VarChar(100)
+  motivo                  String?            @db.VarChar(100)
+  observacao              String?            @db.Text
+
+  execucao       ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+  produto        Produto              @relation(fields: [produtoId], references: [id])
+  fornecedor     Fornecedor?          @relation(fields: [fornecedorId], references: [id])
+  centroTrabalho CentroTrabalho?      @relation(fields: [centroTrabalhoId], references: [id])
+
+  @@index([execucaoId, tipo], map: "idx_ordem_exec_tipo")
+  @@index([prioridade], map: "idx_ordem_prioridade")
+  @@index([dataLiberacao], map: "idx_ordem_data_liberacao")
+  @@map("ordem_planejada")
+}
+
+model CargaCapacidade {
+  id                        String              @id @default(uuid())
+  execucaoId                String              @map("execucao_id")
+  centroTrabalhoId          String              @map("centro_trabalho_id")
+  periodo                   DateTime            @db.Date
+  capacidadeDisponivelHoras Decimal             @map("capacidade_disponivel_horas") @db.Decimal(8, 2)
+  cargaPlanejadaHoras       Decimal             @map("carga_planejada_horas") @db.Decimal(8, 2)
+  utilizacaoPercentual      Decimal             @map("utilizacao_percentual") @db.Decimal(5, 2)
+  sobrecarga                Boolean             @default(false)
+  horasExcedentes           Decimal             @default(0) @map("horas_excedentes") @db.Decimal(8, 2)
+  sugestao                  SugestaoCapacidade?
+
+  execucao       ExecucaoPlanejamento @relation(fields: [execucaoId], references: [id])
+  centroTrabalho CentroTrabalho       @relation(fields: [centroTrabalhoId], references: [id])
+
+  @@index([centroTrabalhoId, periodo], map: "idx_carga_centro_periodo")
+  @@map("carga_capacidade")
+}
+
+// ============================================
+// SYSTEM TABLES
+// ============================================
+
+model ConfigSistema {
+  chave     String   @id @db.VarChar(100)
+  valor     Json     @db.JsonB
+  descricao String?  @db.Text
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+  updatedBy String?  @map("updated_by")
+
+  usuario Usuario? @relation(fields: [updatedBy], references: [id])
+
+  @@map("config_sistema")
+}
+
+model MappingTemplate {
+  id              String    @id @default(uuid())
+  nome            String    @db.VarChar(150)
+  descricao       String?   @db.Text
+  tipoFonte       TipoFonte @map("tipo_fonte")
+  colunas         Json      @db.JsonB
+  validationRules Json?     @map("validation_rules") @db.JsonB
+  lastUsedAt      DateTime? @map("last_used_at") @db.Timestamptz()
+  usageCount      Int       @default(0) @map("usage_count")
+  ativo           Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@index([tipoFonte, ativo], map: "idx_mapping_template_tipo_ativo")
+  @@map("mapping_template")
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  email     String   @unique @db.VarChar(255)
+  nome      String   @db.VarChar(150)
+  senhaHash        String  @map("senha_hash") @db.VarChar(255)
+  role             UserRole @default(viewer)
+  ativo            Boolean  @default(true)
+  refreshTokenHash String?  @map("refresh_token_hash") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  execucoesPlanejamento ExecucaoPlanejamento[]
+  eventosCapacidade     EventoCapacidade[]
+  configSistema         ConfigSistema[]
+  notificacoesAck       Notificacao[]
+  forecastOverrides     ForecastOverride[] @relation("OverrideUsuario")
+  atividadeLog          AtividadeUsuario[]
+
+  @@map("usuario")
+}
+
+// ─── User Activity Logging (Story 5.8 — FR-075) ───
+
+enum TipoAtividade {
+  LOGIN
+  LOGOUT
+  PAGE_VIEW
+  EXPORT
+  OVERRIDE_CREATE
+  OVERRIDE_REVERT
+  MRP_EXECUTION
+  FORECAST_EXECUTION
+  CONFIG_CHANGE
+}
+
+model AtividadeUsuario {
+  id          String         @id @default(uuid())
+  usuarioId   String?        @map("usuario_id")
+  tipo        TipoAtividade
+  recurso     String?        @db.VarChar(255)
+  metadata    Json?          @db.JsonB
+  ipAddress   String?        @map("ip_address") @db.VarChar(45)
+  userAgent   String?        @map("user_agent") @db.Text
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([usuarioId, createdAt], map: "idx_atividade_usuario_data")
+  @@index([tipo, createdAt], map: "idx_atividade_tipo_data")
+  @@map("atividade_usuario")
+}
+
+// ─── Alert System (Story 4.4) ───
+
+enum TipoAlerta {
+  STOCKOUT
+  URGENT_PURCHASE
+  CAPACITY_OVERLOAD
+  FORECAST_DEVIATION
+  STORAGE_FULL
+  PIPELINE_FAILURE
+
+  @@map("tipo_alerta")
+}
+
+enum SeveridadeAlerta {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+
+  @@map("severidade_alerta")
+}
+
+model Notificacao {
+  id             String           @id @default(uuid())
+  tipo           TipoAlerta
+  severidade     SeveridadeAlerta
+  titulo         String           @db.VarChar(200)
+  mensagem       String           @db.Text
+  entityId       String?          @map("entity_id")
+  entityType     String?          @map("entity_type") @db.VarChar(50)
+  metadata       Json             @default("{}")
+  acknowledgedAt DateTime?        @map("acknowledged_at") @db.Timestamptz()
+  acknowledgedBy String?          @map("acknowledged_by")
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz()
+
+  acknowledgedByUser Usuario? @relation(fields: [acknowledgedBy], references: [id])
+
+  @@index([tipo, severidade], map: "idx_notificacao_tipo_severidade")
+  @@index([acknowledgedAt], map: "idx_notificacao_acknowledged")
+  @@index([createdAt], map: "idx_notificacao_created")
+  @@map("notificacao")
+}

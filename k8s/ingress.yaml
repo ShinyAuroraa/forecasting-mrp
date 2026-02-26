@@ -1,0 +1,44 @@
+# AC-12: Ingress configuration with TLS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forecasting-mrp-ingress
+  namespace: forecasting-mrp
+  labels:
+    app.kubernetes.io/part-of: forecasting-mrp
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERTIFICATE_ID"
+    alb.ingress.kubernetes.io/healthcheck-path: /api/v1/health
+    alb.ingress.kubernetes.io/group.name: forecasting-mrp
+spec:
+  ingressClassName: alb
+  tls:
+    - hosts:
+        - api.forecasting-mrp.example.com
+        - app.forecasting-mrp.example.com
+      secretName: forecasting-mrp-tls
+  rules:
+    - host: api.forecasting-mrp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-svc
+                port:
+                  number: 3001
+    - host: app.forecasting-mrp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-svc
+                port:
+                  number: 3000
