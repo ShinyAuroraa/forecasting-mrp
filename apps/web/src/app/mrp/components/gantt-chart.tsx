@@ -4,6 +4,7 @@ import { useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartBase } from '@/components/charts/chart-base';
 import { escapeHtml } from '@/lib/mrp-utils';
+import type { EChartsOption } from 'echarts';
 import type { PlannedOrder, GanttBar } from '@/types/mrp';
 
 interface GanttChartProps {
@@ -173,7 +174,7 @@ export function GanttChart({ orders }: GanttChartProps) {
       </CardHeader>
       <CardContent>
         <ChartBase
-          option={option}
+          option={option as EChartsOption}
           height={`${Math.max(300, ganttData.skuList.length * 28 + 80)}px`}
         />
       </CardContent>

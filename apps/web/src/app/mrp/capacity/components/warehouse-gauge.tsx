@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartBase } from '@/components/charts/chart-base';
+import type { EChartsOption } from 'echarts';
 import type { StorageDepositoRecord } from '@/types/mrp';
 
 interface WarehouseGaugeProps {
@@ -86,7 +87,7 @@ export function WarehouseGauge({ deposito }: WarehouseGaugeProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartBase option={option} height="200px" />
+        <ChartBase option={option as EChartsOption} height="200px" />
         {latestResult && (
           <p className="text-center text-xs text-gray-500">
             {latestResult.projectedVolumeM3.toFixed(1)} m³ / {latestResult.capacityM3.toFixed(1)} m³

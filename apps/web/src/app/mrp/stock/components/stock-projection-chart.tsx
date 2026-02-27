@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartBase } from '@/components/charts/chart-base';
 import { getWeekStart } from '@/lib/mrp-utils';
+import type { EChartsOption } from 'echarts';
 import type { PlannedOrder, StockParams } from '@/types/mrp';
 
 interface StockProjectionChartProps {
@@ -214,7 +215,7 @@ export function StockProjectionChart({
         <CardTitle>Projeção de Estoque</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartBase option={option} height="400px" />
+        <ChartBase option={option as EChartsOption} height="400px" />
       </CardContent>
     </Card>
   );

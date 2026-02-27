@@ -100,7 +100,7 @@ export function DriftMonitor() {
         <button
           type="button"
           className="rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-          onClick={() => triggerCheck.mutate()}
+          onClick={() => triggerCheck.mutate(undefined)}
           disabled={triggerCheck.isPending}
         >
           {triggerCheck.isPending ? 'Verificando...' : 'Verificar Drift'}

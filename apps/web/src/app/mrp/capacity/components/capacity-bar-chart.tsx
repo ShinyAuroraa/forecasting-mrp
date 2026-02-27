@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartBase } from '@/components/charts/chart-base';
+import type { EChartsOption } from 'echarts';
 import type { CapacityWeekRecord } from '@/types/mrp';
 
 interface CapacityBarChartProps {
@@ -68,7 +69,7 @@ export function CapacityBarChart({ records }: CapacityBarChartProps) {
 
     // For each work center, create two series: planned load and available capacity
     // Displayed as grouped bars (not stacked) so both are visible side-by-side.
-    const series: unknown[] = [];
+    const series: Record<string, unknown>[] = [];
     for (const [, wc] of chartData.workCenters) {
       // Build a lookup map for O(1) access
       const weekLookup = new Map(wc.weeks.map((w) => [w.periodStart, w]));
@@ -135,7 +136,7 @@ export function CapacityBarChart({ records }: CapacityBarChartProps) {
         <CardTitle>Carga vs Capacidade por Centro de Trabalho</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartBase option={option} height="350px" />
+        <ChartBase option={option as EChartsOption} height="350px" />
       </CardContent>
     </Card>
   );
