@@ -51,6 +51,9 @@ describe('StockParamsService', () => {
     skuClassification: {
       findUnique: jest.fn(),
     },
+    historicoLeadTime: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
   };
 
   beforeEach(async () => {

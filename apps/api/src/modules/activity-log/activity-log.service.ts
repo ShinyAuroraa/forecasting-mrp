@@ -28,7 +28,7 @@ export class ActivityLogService {
     return this.prisma.atividadeUsuario.create({
       data: {
         usuarioId: dto.usuarioId ?? null,
-        tipo: dto.tipo,
+        tipo: dto.tipo as any,
         recurso: dto.recurso ?? null,
         metadata: dto.metadata ?? null,
         ipAddress: dto.ipAddress ?? null,

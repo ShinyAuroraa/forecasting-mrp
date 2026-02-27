@@ -107,9 +107,10 @@ export class SftpEmailAdapter implements EmailAdapter {
         privateKey: this.config.privateKey,
       });
       await sftp.list(this.config.remotePath);
-      return true;
-    } finally {
       await sftp.end();
+      return true;
+    } catch {
+      return false;
     }
   }
 

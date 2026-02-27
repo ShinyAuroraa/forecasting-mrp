@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { SftpEmailAdapter } from './sftp-email.adapter';
 import type { EmailSftpConfig } from './email-adapter.interface';
 
@@ -76,7 +77,13 @@ describe('SftpEmailAdapter', () => {
     it('should download file as buffer', async () => {
       mockSftpClient.connect.mockResolvedValue(undefined);
       mockSftpClient.end.mockResolvedValue(undefined);
-      mockSftpClient.get.mockResolvedValue(Buffer.from('csv data'));
+      const mockStream = new Readable({
+        read() {
+          this.push(Buffer.from('csv data'));
+          this.push(null);
+        },
+      });
+      mockSftpClient.get.mockResolvedValue(mockStream);
 
       const buffer = await adapter.downloadAttachment('_', 'report.csv');
       expect(buffer.toString('utf-8')).toBe('csv data');

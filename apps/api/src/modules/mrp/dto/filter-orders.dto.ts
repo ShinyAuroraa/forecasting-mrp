@@ -4,7 +4,7 @@ import {
   TipoOrdem,
   PrioridadeOrdem,
 } from '../../../generated/prisma/client';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 /**
  * DTO for filtering planned orders.

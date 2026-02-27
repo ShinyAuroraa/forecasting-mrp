@@ -22,6 +22,7 @@ const mockPrisma = {
   mappingTemplate: {
     create: jest.fn(),
     findMany: jest.fn(),
+    findFirst: jest.fn(),
     count: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
@@ -81,13 +82,13 @@ describe('MappingTemplateRepository', () => {
 
   describe('findById', () => {
     it('should find template by id', async () => {
-      mockPrisma.mappingTemplate.findUnique.mockResolvedValue(mockTemplate);
+      mockPrisma.mappingTemplate.findFirst.mockResolvedValue(mockTemplate);
       const result = await repository.findById('tpl-1');
       expect(result?.id).toBe('tpl-1');
     });
 
     it('should return null when not found', async () => {
-      mockPrisma.mappingTemplate.findUnique.mockResolvedValue(null);
+      mockPrisma.mappingTemplate.findFirst.mockResolvedValue(null);
       const result = await repository.findById('non-existent');
       expect(result).toBeNull();
     });
@@ -119,7 +120,7 @@ describe('MappingTemplateRepository', () => {
 
   describe('duplicate', () => {
     it('should create a copy with "(cópia)" suffix', async () => {
-      mockPrisma.mappingTemplate.findUnique.mockResolvedValue(mockTemplate);
+      mockPrisma.mappingTemplate.findFirst.mockResolvedValue(mockTemplate);
       const duplicated = { ...mockTemplate, id: 'tpl-2', nome: 'Vendas SAP (cópia)' };
       mockPrisma.mappingTemplate.create.mockResolvedValue(duplicated);
       const result = await repository.duplicate('tpl-1');
@@ -127,7 +128,7 @@ describe('MappingTemplateRepository', () => {
     });
 
     it('should return null when original not found', async () => {
-      mockPrisma.mappingTemplate.findUnique.mockResolvedValue(null);
+      mockPrisma.mappingTemplate.findFirst.mockResolvedValue(null);
       const result = await repository.duplicate('non-existent');
       expect(result).toBeNull();
     });

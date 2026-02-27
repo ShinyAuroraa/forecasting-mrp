@@ -1,6 +1,6 @@
 import { IsOptional, IsUUID } from 'class-validator';
 
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 /**
  * DTO for filtering capacity load records.

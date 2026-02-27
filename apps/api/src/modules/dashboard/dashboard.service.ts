@@ -429,6 +429,7 @@ export class DashboardService {
       by: ['tipo'],
       _count: { id: true },
       where: { acknowledgedAt: null },
+      orderBy: { _count: { id: 'desc' } },
       take: 20,
     });
 

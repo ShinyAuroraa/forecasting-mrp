@@ -109,16 +109,14 @@ export class RestApiConnector implements ErpConnector {
     const xmlString = typeof data === 'string' ? data : String(data);
     const rows: RawMovementData[] = [];
 
-    const itemMatches = xmlString.match(/<item>([\s\S]*?)<\/item>/gi) ?? [];
+    const itemMatches = [...xmlString.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
 
-    for (const itemXml of itemMatches) {
+    for (const itemMatch of itemMatches) {
       const row: Record<string, string> = {};
-      const fieldMatches = itemXml.matchAll(/<(\w+)>([\s\S]*?)<\/\1>/g);
+      const fieldMatches = itemMatch[1].matchAll(/<(\w+)>([\s\S]*?)<\/\1>/g);
 
       for (const fieldMatch of fieldMatches) {
-        if (fieldMatch[1] !== 'item') {
-          row[fieldMatch[1]] = fieldMatch[2].trim();
-        }
+        row[fieldMatch[1]] = fieldMatch[2].trim();
       }
 
       if (Object.keys(row).length > 0) {

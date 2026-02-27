@@ -68,7 +68,7 @@ describe('ExportController', () => {
   });
 
   it('GET /export/history should return export list', async () => {
-    const result = await controller.history(undefined, mockReq());
+    const result = await controller.history(mockReq());
     expect(service.getHistory).toHaveBeenCalledWith('user-1', 20);
     expect(result).toEqual([]);
   });

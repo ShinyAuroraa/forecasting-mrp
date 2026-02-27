@@ -59,12 +59,12 @@ describe('IngestaoController', () => {
     const result = { imported: 5, updated: 2, rejected: 1, errors: [] };
     mockUploadService.processUpload.mockResolvedValue(result);
     const file = { buffer: Buffer.from(''), originalname: 'test.csv' } as Express.Multer.File;
-    const response = await controller.upload(file);
+    const response = await controller.upload(file, {} as any);
     expect(response.imported).toBe(5);
   });
 
   it('should throw BadRequestException when no file', async () => {
-    await expect(controller.upload(undefined as any)).rejects.toThrow(
+    await expect(controller.upload(undefined as any, {} as any)).rejects.toThrow(
       BadRequestException,
     );
   });

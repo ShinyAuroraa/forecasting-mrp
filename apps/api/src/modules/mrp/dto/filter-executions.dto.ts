@@ -3,7 +3,7 @@ import { IsOptional, IsEnum } from 'class-validator';
 import {
   StatusExecucao,
 } from '../../../generated/prisma/client';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 /**
  * DTO for filtering MRP execution history.

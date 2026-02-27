@@ -1,12 +1,15 @@
 import { ImapAdapter } from './imap.adapter';
 import type { ImapConfig } from './email-adapter.interface';
 
+const mockLock = { release: jest.fn() };
 const mockImapClient = {
   connect: jest.fn(),
   logout: jest.fn(),
   search: jest.fn(),
   fetchOne: jest.fn(),
   download: jest.fn(),
+  getMailboxLock: jest.fn().mockResolvedValue(mockLock),
+  fetch: jest.fn(),
 };
 
 jest.mock('imapflow', () => ({
@@ -51,8 +54,7 @@ describe('ImapAdapter', () => {
     it('should search and return emails', async () => {
       mockImapClient.connect.mockResolvedValue(undefined);
       mockImapClient.logout.mockResolvedValue(undefined);
-      mockImapClient.search.mockResolvedValue([1]);
-      mockImapClient.fetchOne.mockResolvedValue({
+      const mockMsg = {
         uid: 1,
         envelope: {
           from: [{ address: 'erp@test.com' }],
@@ -60,7 +62,8 @@ describe('ImapAdapter', () => {
           date: new Date('2026-02-26'),
         },
         bodyStructure: { childNodes: [] },
-      });
+      };
+      mockImapClient.fetch.mockReturnValue((async function* () { yield mockMsg; })());
 
       const emails = await adapter.fetchEmails({ since: new Date('2026-02-25') });
       expect(emails).toHaveLength(1);
@@ -69,7 +72,7 @@ describe('ImapAdapter', () => {
     it('should return empty when no results', async () => {
       mockImapClient.connect.mockResolvedValue(undefined);
       mockImapClient.logout.mockResolvedValue(undefined);
-      mockImapClient.search.mockResolvedValue([]);
+      mockImapClient.fetch.mockReturnValue((async function* () {})());
 
       const emails = await adapter.fetchEmails({});
       expect(emails).toEqual([]);

@@ -381,7 +381,7 @@ describe('MrpService', () => {
 
   describe('executeMrp', () => {
     it('should execute all 8 steps in order and return CONCLUIDO', async () => {
-      const dto: ExecuteMrpDto = {};
+      const dto: ExecuteMrpDto = { forceRecalculate: true };
       const result = await service.executeMrp(dto);
 
       expect(result.execucaoId).toBe(mockExecucaoId);

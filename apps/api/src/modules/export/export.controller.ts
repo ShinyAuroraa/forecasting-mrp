@@ -9,7 +9,7 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
-import { Roles } from '../../auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { Response, Request } from 'express';
 import { ExportService } from './export.service';
 import { RequestExportDto } from './dto/request-export.dto';
@@ -68,7 +68,7 @@ export class ExportController {
   /** AC-17: GET /export/history — list recent exports */
   @Get('history')
   @Roles('viewer')
-  async history(@Query('limit') limit?: string, @Req() req: Request) {
+  async history(@Req() req: Request, @Query('limit') limit?: string) {
     const parsedLimit = limit ? Math.min(parseInt(limit, 10) || 20, 100) : 20;
     const userId = (req as any).user?.sub ?? 'anonymous';
     return this.exportService.getHistory(userId, parsedLimit);

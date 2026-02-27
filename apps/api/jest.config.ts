@@ -5,7 +5,7 @@ const config: Config = {
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', { diagnostics: false }],
   },
   collectCoverageFrom: [
     '**/*.ts',
@@ -18,6 +18,7 @@ const config: Config = {
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^@prisma/client$': '<rootDir>/generated/prisma/client',
   },
 };
 
