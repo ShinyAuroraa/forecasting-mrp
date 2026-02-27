@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
@@ -117,14 +117,28 @@ export class ErpImportService {
     });
 
     const url = `${FORECAST_ENGINE_URL}/parse-pdf/${tipo}`;
-    this.logger.log(`Sending PDF to forecast-engine: ${url}`);
+    this.logger.log(
+      `Sending PDF to forecast-engine: ${url} (${fileBuffer.length} bytes, filename: ${filename})`,
+    );
 
-    const response = await axios.post(url, form, {
-      headers: form.getHeaders(),
-      timeout: 120_000,
-      maxContentLength: 50 * 1024 * 1024,
-    });
-    return response.data;
+    try {
+      const response = await axios.post(url, form, {
+        headers: form.getHeaders(),
+        timeout: 120_000,
+        maxContentLength: 50 * 1024 * 1024,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const detail =
+          error.response.data?.detail || JSON.stringify(error.response.data);
+        this.logger.error(
+          `Forecast-engine returned ${error.response.status}: ${detail}`,
+        );
+        throw new BadRequestException(detail);
+      }
+      throw error;
+    }
   }
 
   async importProdutos(
@@ -251,7 +265,7 @@ export class ErpImportService {
           volume: item.qtde_kg || item.qtde_pecas,
           receita: item.valor_liquido || item.valor_bruto,
           fonte: 'ERP_WEBMAIS',
-          qualidade: 100,
+          qualidade: 99,
         };
 
         if (existing) {
@@ -314,33 +328,43 @@ export class ErpImportService {
         const [month, year] = item.periodo.split('/');
         const dataReferencia = new Date(`${year}-${month}-01`);
 
+        // Check if a record already exists (from faturamento or previous movimentacao)
         const existing = await this.prisma.serieTemporal.findFirst({
           where: {
             produtoId: produto.id,
             dataReferencia,
             granularidade: Granularidade.mensal,
-            fonte: 'ERP_WEBMAIS_MOV',
           },
         });
 
-        const data = {
-          produtoId: produto.id,
-          dataReferencia,
-          granularidade: Granularidade.mensal,
-          volume: item.total_quantidade,
-          receita: item.total_valor,
-          fonte: 'ERP_WEBMAIS_MOV',
-          qualidade: 90,
-        };
-
         if (existing) {
+          // If faturamento already imported this, skip (faturamento has better data)
+          if (existing.fonte === 'ERP_WEBMAIS') {
+            result.atualizados++;
+            continue;
+          }
           await this.prisma.serieTemporal.update({
             where: { id: existing.id },
-            data,
+            data: {
+              volume: item.total_quantidade,
+              receita: item.total_valor,
+              fonte: 'ERP_WEBMAIS_MOV',
+              qualidade: 90,
+            },
           });
           result.atualizados++;
         } else {
-          await this.prisma.serieTemporal.create({ data });
+          await this.prisma.serieTemporal.create({
+            data: {
+              produtoId: produto.id,
+              dataReferencia,
+              granularidade: Granularidade.mensal,
+              volume: item.total_quantidade,
+              receita: item.total_valor,
+              fonte: 'ERP_WEBMAIS_MOV',
+              qualidade: 90,
+            },
+          });
           result.importados++;
         }
       } catch (error) {

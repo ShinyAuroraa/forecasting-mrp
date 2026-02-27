@@ -36,11 +36,11 @@ function uploadPdf(tipo: ReportType, file: File): Promise<ImportResult> {
   const formData = new FormData();
   formData.append('file', file);
   return api
-    .post<ImportResult>(`/erp-import/${tipo}`, formData, {
+    .post<{ data: ImportResult }>(`/erp-import/${tipo}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120_000,
     })
-    .then((res) => res.data);
+    .then((res) => res.data.data);
 }
 
 export function useImportProdutos() {
@@ -97,8 +97,10 @@ export function useImportStatus() {
   return useQuery({
     queryKey: ['erp-import-status'],
     queryFn: async () => {
-      const { data } = await api.get<ImportStatus>('/erp-import/status');
-      return data;
+      const { data } = await api.get<{ data: ImportStatus }>(
+        '/erp-import/status',
+      );
+      return data.data;
     },
   });
 }
