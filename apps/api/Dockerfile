@@ -6,7 +6,7 @@
 # ==========================================
 
 # --- Stage: base ---
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 WORKDIR /app
 
@@ -34,7 +34,7 @@ RUN pnpm --filter @forecasting-mrp/shared run build
 RUN pnpm --filter @forecasting-mrp/api run build
 
 # --- Stage: prod ---
-FROM node:18-alpine AS prod
+FROM node:20-alpine AS prod
 RUN addgroup -g 1001 -S appgroup && adduser -S appuser -u 1001 -G appgroup
 WORKDIR /app
 COPY --from=build /app/apps/api/dist ./dist

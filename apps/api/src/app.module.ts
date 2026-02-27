@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BullModule } from '@nestjs/bullmq';
 import { PrismaModule } from './prisma/prisma.module';
 import { CommonModule } from './common/common.module';
 import { HealthModule } from './modules/health/health.module';
@@ -26,6 +27,12 @@ import { ConfigSistemaModule } from './modules/config/config-sistema.module';
   imports: [
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     ScheduleModule.forRoot(),
+    BullModule.forRoot({
+      connection: {
+        host: new URL(process.env.REDIS_URL || 'redis://localhost:6379').hostname,
+        port: Number(new URL(process.env.REDIS_URL || 'redis://localhost:6379').port) || 6379,
+      },
+    }),
     PrismaModule,
     CommonModule,
     HealthModule,
