@@ -27,6 +27,9 @@ redis==5.3.0
 # HTTP Client
 httpx==0.28.1
 
+# PDF Parsing
+pdfplumber==0.11.9
+
 # Utilities
 python-dotenv==1.1.0
 python-multipart==0.0.20

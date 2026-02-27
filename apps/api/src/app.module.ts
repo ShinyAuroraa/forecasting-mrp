@@ -22,6 +22,7 @@ import { ScenarioModule } from './modules/scenarios/scenario.module';
 import { ExportModule } from './modules/export/export.module';
 import { ActivityLogModule } from './modules/activity-log/activity-log.module';
 import { ConfigSistemaModule } from './modules/config/config-sistema.module';
+import { ErpImportModule } from './modules/erp-import/erp-import.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ConfigSistemaModule } from './modules/config/config-sistema.module';
     ExportModule,
     ActivityLogModule,
     ConfigSistemaModule,
+    ErpImportModule,
   ],
 })
 export class AppModule {}
