@@ -183,7 +183,7 @@ describe('MrpService', () => {
         findMany: jest.fn().mockResolvedValue([]),
         findUnique: jest.fn().mockResolvedValue(null),
       },
-      estruturaProduto: {
+      bom: {
         findMany: jest.fn().mockResolvedValue([]),
       },
       parametrosEstoque: {
@@ -344,7 +344,7 @@ describe('MrpService', () => {
       findUnique: jest.fn().mockResolvedValue({ lotificacao: 'L4L' }),
     };
 
-    (prisma as Record<string, unknown>).estruturaProduto = {
+    (prisma as Record<string, unknown>).bom = {
       findMany: jest.fn().mockResolvedValue([]),
     };
 

@@ -695,7 +695,7 @@ export class MrpService {
     }
 
     // Load active BOM lines
-    const bomLinesRaw = await this.prisma.estruturaProduto.findMany({
+    const bomLinesRaw = await this.prisma.bom.findMany({
       where: { ativo: true },
       select: {
         produtoPaiId: true,
@@ -705,7 +705,7 @@ export class MrpService {
       },
     });
 
-    const bomLines: BomLineInput[] = bomLinesRaw.map((line) => ({
+    const bomLines: BomLineInput[] = bomLinesRaw.map((line: any) => ({
       produtoPaiId: line.produtoPaiId,
       produtoFilhoId: line.produtoFilhoId,
       quantidade: typeof line.quantidade === 'number'
@@ -821,7 +821,7 @@ export class MrpService {
       return new Map();
     }
 
-    const products = await this.prisma.produto.findMany({
+    const products = await (this.prisma.produto as any).findMany({
       where: { id: { in: productIds } },
       select: {
         id: true,
@@ -833,7 +833,7 @@ export class MrpService {
         custoPedido: true,
         custoManutencaoPctAno: true,
       },
-    });
+    }) as any[];
 
     // Load MOQ from supplier for each product
     const supplierData = await this.prisma.produtoFornecedor.findMany({
@@ -851,7 +851,7 @@ export class MrpService {
     const moqMap = new Map<string, { moq: number; leadTimeDias: number }>();
     for (const s of supplierData) {
       moqMap.set(s.produtoId, {
-        moq: s.moq ?? 1,
+        moq: Number(s.moq ?? 1),
         leadTimeDias: s.leadTimeDias ?? 0,
       });
     }
@@ -880,7 +880,7 @@ export class MrpService {
       const leadTimePeriods = Math.ceil(leadTimeDias / 7);
 
       map.set(product.id, {
-        lotificacao: product.lotificacao ?? 'L4L',
+        lotificacao: (product as any).lotificacao ?? 'L4L',
         loteMinimo: Number(product.loteMinimo ?? 1),
         multiploCompra: Number(product.multiploCompra ?? 1),
         moq: supplier?.moq ?? 1,
@@ -917,11 +917,11 @@ export class MrpService {
    * Get lotificacao method for a single product.
    */
   private async getProductLotificacao(produtoId: string): Promise<string | null> {
-    const product = await this.prisma.produto.findUnique({
+    const product = await (this.prisma.produto as any).findUnique({
       where: { id: produtoId },
       select: { lotificacao: true },
     });
-    return product?.lotificacao ?? null;
+    return (product as any)?.lotificacao ?? null;
   }
 
   /**

@@ -59,7 +59,7 @@ export class NotificacaoService {
     };
   }
 
-  async findAll(query: AlertQueryDto): Promise<{ data: Notificacao[]; total: number }> {
+  async findAll(query: AlertQueryDto): Promise<{ data: any[]; total: number }> {
     const where: Record<string, unknown> = {};
 
     if (query.tipo) where.tipo = query.tipo;
@@ -86,7 +86,7 @@ export class NotificacaoService {
     return { data, total };
   }
 
-  async acknowledge(id: string, userId: string): Promise<Notificacao> {
+  async acknowledge(id: string, userId: string): Promise<any> {
     const existing = await this.prisma.notificacao.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException(`Alert ${id} not found`);

@@ -17,8 +17,4 @@ export class FilterEmailDto extends PaginationDto {
   @IsIn(['ENVIADO', 'FALHA', 'NOOP'])
   readonly status?: string;
 
-  @IsOptional()
-  @IsString()
-  @IsIn(['asc', 'desc'])
-  readonly sortOrder?: string;
 }

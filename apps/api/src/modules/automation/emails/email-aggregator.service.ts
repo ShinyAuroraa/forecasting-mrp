@@ -61,7 +61,7 @@ export class EmailAggregatorService {
           tipo: { in: ['STOCKOUT'] as any },
           createdAt: { gte: this.oneDayAgo() },
         },
-        include: { produto: { select: { codigo: true, descricao: true } } },
+        include: { produto: { select: { codigo: true, descricao: true } } } as any,
         take: 20,
         orderBy: { createdAt: 'desc' },
       });
@@ -149,7 +149,7 @@ export class EmailAggregatorService {
 
   private async getCapacitySummary(): Promise<DailySummaryData['capacity']> {
     try {
-      const recentEvents = await this.prisma.eventoCapacidade.findMany({
+      const recentEvents = await (this.prisma.eventoCapacidade as any).findMany({
         where: {
           periodoInicio: { gte: this.oneDayAgo() },
         },
@@ -158,7 +158,7 @@ export class EmailAggregatorService {
         },
         orderBy: { utilizacaoPct: 'desc' },
         take: 20,
-      });
+      }) as any[];
 
       const overloadedCenters: CapacitySummary[] = recentEvents
         .filter((e) => Number(e.utilizacaoPct) > 85)

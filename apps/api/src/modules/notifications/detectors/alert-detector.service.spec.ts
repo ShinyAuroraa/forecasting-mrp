@@ -18,7 +18,7 @@ describe('AlertDetectorService', () => {
             inventarioAtual: { findMany: jest.fn().mockResolvedValue([]) },
             ordemPlanejada: { findMany: jest.fn().mockResolvedValue([]) },
             eventoCapacidade: { findMany: jest.fn().mockResolvedValue([]) },
-            resultadoForecast: { findMany: jest.fn().mockResolvedValue([]) },
+            forecastResultado: { findMany: jest.fn().mockResolvedValue([]) },
             deposito: { findMany: jest.fn().mockResolvedValue([]) },
             notificacao: { count: jest.fn().mockResolvedValue(0) },
           },
@@ -149,7 +149,7 @@ describe('AlertDetectorService', () => {
 
   describe('detectForecastDeviation', () => {
     it('should create FORECAST_DEVIATION alert when MAPE > threshold', async () => {
-      prisma.resultadoForecast.findMany.mockResolvedValue([
+      prisma.forecastResultado.findMany.mockResolvedValue([
         {
           mape: 45,
           produto: { id: 'prod-3', sku: 'SKU-003', descricao: 'Widget C' },
@@ -169,7 +169,7 @@ describe('AlertDetectorService', () => {
     it('should use configurable threshold', async () => {
       detector.setForecastDeviationThreshold(20);
 
-      prisma.resultadoForecast.findMany.mockResolvedValue([
+      prisma.forecastResultado.findMany.mockResolvedValue([
         {
           mape: 25,
           produto: { id: 'prod-4', sku: 'SKU-004', descricao: 'Widget D' },

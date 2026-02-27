@@ -232,7 +232,7 @@ export class CycleService {
 
     await this.repository.updateExecution(executionId, status as any, {
       completedAt,
-      errorMessage: hasFailure ? `Failed at step ${stepsCompleted + 1} of ${definition.steps.length}` : null,
+      errorMessage: hasFailure ? `Failed at step ${stepsCompleted + 1} of ${definition.steps.length}` : undefined,
       resultadoResumo: {
         cycleType,
         stepsCompleted,

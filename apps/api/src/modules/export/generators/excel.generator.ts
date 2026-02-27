@@ -58,7 +58,7 @@ export class ExcelGeneratorService {
     const orders = await this.prisma.ordemPlanejada.findMany({
       where: this.buildOrderFilters(filters),
       include: { produto: { select: { codigo: true, descricao: true } } },
-      orderBy: { dataInicio: 'asc' },
+      orderBy: { dataLiberacao: 'asc' } as any,
       take: 10000,
     });
 
@@ -86,8 +86,8 @@ export class ExcelGeneratorService {
         descricao: (o as any).produto?.descricao ?? '',
         tipo: o.tipo,
         quantidade: Number(o.quantidade),
-        dataInicio: o.dataInicio,
-        dataFim: o.dataFim,
+        dataInicio: (o as any).dataInicio ?? (o as any).dataLiberacao,
+        dataFim: (o as any).dataFim ?? (o as any).dataNecessidade,
         status: o.status,
         custo: Number(o.custoEstimado ?? 0),
       });
@@ -102,7 +102,7 @@ export class ExcelGeneratorService {
     const orders = await this.prisma.ordemPlanejada.findMany({
       where: { tipo: 'COMPRA', status: { not: 'CANCELADA' } },
       include: { produto: { select: { codigo: true, descricao: true } } },
-      orderBy: { dataInicio: 'asc' },
+      orderBy: { dataLiberacao: 'asc' } as any,
       take: 10000,
     });
 
@@ -125,7 +125,7 @@ export class ExcelGeneratorService {
         produto: (o as any).produto?.codigo ?? o.produtoId,
         descricao: (o as any).produto?.descricao ?? '',
         quantidade: Number(o.quantidade),
-        dataInicio: o.dataInicio,
+        dataInicio: (o as any).dataInicio ?? (o as any).dataLiberacao,
         status: o.status,
         custo: Number(o.custoEstimado ?? 0),
       });
@@ -254,14 +254,15 @@ export class ExcelGeneratorService {
     this.styleHeaderRow(sheet);
 
     for (const p of params) {
+      const pa = p as any;
       sheet.addRow({
-        produto: (p as any).produto?.codigo ?? p.produtoId,
-        descricao: (p as any).produto?.descricao ?? '',
-        estoqueSeguranca: Number(p.estoqueSeguranca ?? 0),
-        pontoReposicao: Number(p.pontoReposicao ?? 0),
-        leadTime: Number(p.leadTimeDias ?? 0),
-        loteMinimo: Number(p.loteMinimo ?? 0),
-        loteMultiplo: Number(p.loteMultiplo ?? 0),
+        produto: pa.produto?.codigo ?? p.produtoId,
+        descricao: pa.produto?.descricao ?? '',
+        estoqueSeguranca: Number(pa.estoqueSeguranca ?? pa.safetyStock ?? 0),
+        pontoReposicao: Number(pa.pontoReposicao ?? pa.reorderPoint ?? 0),
+        leadTime: Number(pa.leadTimeDias ?? pa.leadTimeDiasBase ?? 0),
+        loteMinimo: Number(pa.loteMinimo ?? pa.estoqueMinimo ?? 0),
+        loteMultiplo: Number(pa.loteMultiplo ?? 0),
       });
     }
 

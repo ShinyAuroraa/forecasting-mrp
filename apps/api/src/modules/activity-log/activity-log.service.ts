@@ -30,7 +30,7 @@ export class ActivityLogService {
         usuarioId: dto.usuarioId ?? null,
         tipo: dto.tipo as any,
         recurso: dto.recurso ?? null,
-        metadata: dto.metadata ?? null,
+        metadata: (dto.metadata ?? null) as any,
         ipAddress: dto.ipAddress ?? null,
         userAgent: dto.userAgent ?? null,
       },

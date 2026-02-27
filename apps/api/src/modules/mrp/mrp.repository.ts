@@ -41,7 +41,7 @@ export class MrpRepository {
         tipo: params.tipo,
         status: params.status,
         gatilho: params.gatilho,
-        parametros: params.parametros ?? null,
+        parametros: (params.parametros ?? null) as any,
         createdBy: params.createdBy ?? null,
       },
     });
@@ -73,7 +73,7 @@ export class MrpRepository {
         ...(extras?.completedAt !== undefined ? { completedAt: extras.completedAt } : {}),
         ...(extras?.errorMessage !== undefined ? { errorMessage: extras.errorMessage } : {}),
         ...(extras?.resultadoResumo !== undefined ? { resultadoResumo: extras.resultadoResumo } : {}),
-      },
+      } as any,
     });
   }
 
@@ -145,7 +145,7 @@ export class MrpRepository {
         ...(params.durationMs !== undefined ? { durationMs: params.durationMs } : {}),
         ...(params.completedAt !== undefined ? { completedAt: params.completedAt } : {}),
         ...(params.details !== undefined ? { details: params.details } : {}),
-      },
+      } as any,
     });
   }
 

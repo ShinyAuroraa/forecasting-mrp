@@ -52,7 +52,7 @@ export class MrpController {
   @Post('execute')
   @Roles('manager')
   @HttpCode(HttpStatus.ACCEPTED)
-  execute(@Body() dto: ExecuteMrpDto) {
+  execute(@Body() dto: ExecuteMrpDto): Promise<any> {
     return this.mrpService.executeMrp(dto);
   }
 

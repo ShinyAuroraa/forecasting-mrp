@@ -71,7 +71,7 @@ export class PipelineRepository {
         ...(extras?.errorMessage !== undefined ? { errorMessage: extras.errorMessage } : {}),
         ...(extras?.resultadoResumo !== undefined ? { resultadoResumo: extras.resultadoResumo } : {}),
         ...(extras?.parametros !== undefined ? { parametros: extras.parametros } : {}),
-      },
+      } as any,
     });
   }
 
@@ -107,7 +107,7 @@ export class PipelineRepository {
         ...(updates.durationMs !== undefined ? { durationMs: updates.durationMs } : {}),
         ...(updates.completedAt !== undefined ? { completedAt: updates.completedAt } : {}),
         ...(updates.details !== undefined ? { details: updates.details } : {}),
-      },
+      } as any,
     });
   }
 

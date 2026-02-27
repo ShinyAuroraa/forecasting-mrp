@@ -57,40 +57,40 @@ export class AlertDetectorService {
 
     // Find items with negative available stock OR items with planned demand
     // within 2 weeks that exceeds current stock
-    const atRisk = await this.prisma.inventarioAtual.findMany({
+    const atRisk = await (this.prisma.inventarioAtual as any).findMany({
       where: {
         OR: [
           { quantidadeDisponivel: { lt: 0 } },
           {
             produto: {
-              ordensPlanejadas: {
+              ordemPlanejada: {
                 some: {
                   tipo: 'PRODUCAO',
-                  dataInicio: { lte: twoWeeksFromNow },
-                  status: 'PLANNED',
+                  dataNecessidade: { lte: twoWeeksFromNow },
+                  status: 'PLANEJADA',
                 },
               },
             },
           },
         ],
       },
-      include: { produto: { select: { id: true, sku: true, descricao: true } } },
+      include: { produto: { select: { id: true, codigo: true, descricao: true } } },
       take: 100,
-    });
+    }) as any[];
 
     for (const item of atRisk) {
-      const existing = await this.findRecentAlert('STOCKOUT', item.produto.id);
+      const existing = await this.findRecentAlert('STOCKOUT', item.produto?.id ?? item.produtoId);
       if (existing) continue;
 
       const alert: CreateAlertDto = {
         tipo: 'STOCKOUT',
         severidade: 'CRITICAL',
-        titulo: `Risco de ruptura: ${item.produto.sku}`,
-        mensagem: `Produto ${item.produto.descricao} (${item.produto.sku}) com estoque projetado negativo: ${item.quantidadeDisponivel} unidades.`,
-        entityId: item.produto.id,
+        titulo: `Risco de ruptura: ${item.produto?.codigo ?? item.produtoId}`,
+        mensagem: `Produto ${item.produto?.descricao ?? ''} (${item.produto?.codigo ?? item.produtoId}) com estoque projetado negativo: ${item.quantidadeDisponivel} unidades.`,
+        entityId: item.produto?.id ?? item.produtoId,
         entityType: 'Produto',
         metadata: {
-          sku: item.produto.sku,
+          sku: item.produto?.codigo ?? item.produtoId,
           quantidadeDisponivel: item.quantidadeDisponivel,
         },
       };
@@ -110,9 +110,9 @@ export class AlertDetectorService {
       where: {
         tipo: 'COMPRA',
         dataLiberacao: { gte: now, lte: sevenDaysFromNow },
-        status: 'PLANNED',
+        status: 'PLANEJADA',
       },
-      include: { produto: { select: { id: true, sku: true, descricao: true } } },
+      include: { produto: { select: { id: true, codigo: true, descricao: true } } },
       take: 100,
     });
 
@@ -120,15 +120,16 @@ export class AlertDetectorService {
       const existing = await this.findRecentAlert('URGENT_PURCHASE', order.id);
       if (existing) continue;
 
+      const orderAny = order as any;
       const alert: CreateAlertDto = {
         tipo: 'URGENT_PURCHASE',
         severidade: 'HIGH',
-        titulo: `Compra urgente: ${order.produto.sku}`,
-        mensagem: `Ordem de compra para ${order.produto.descricao} (${order.produto.sku}) com data de liberação em ${order.dataLiberacao.toISOString().split('T')[0]}. Quantidade: ${order.quantidade}.`,
+        titulo: `Compra urgente: ${orderAny.produto?.codigo ?? order.produtoId}`,
+        mensagem: `Ordem de compra para ${orderAny.produto?.descricao ?? ''} (${orderAny.produto?.codigo ?? order.produtoId}) com data de liberação em ${order.dataLiberacao.toISOString().split('T')[0]}. Quantidade: ${order.quantidade}.`,
         entityId: order.id,
         entityType: 'OrdemPlanejada',
         metadata: {
-          sku: order.produto.sku,
+          sku: orderAny.produto?.codigo ?? order.produtoId,
           quantidade: order.quantidade,
           dataLiberacao: order.dataLiberacao.toISOString(),
         },
@@ -141,28 +142,28 @@ export class AlertDetectorService {
    * AC-7: CAPACITY_OVERLOAD — work center utilization > 110%.
    */
   async detectCapacityOverload(): Promise<void> {
-    const events = await this.prisma.eventoCapacidade.findMany({
+    const events = await (this.prisma.eventoCapacidade as any).findMany({
       where: { utilizacaoPct: { gt: 110 } },
       include: { centroTrabalho: { select: { id: true, nome: true, codigo: true } } },
       orderBy: { periodoInicio: 'desc' },
       take: 100,
-    });
+    }) as any[];
 
     for (const event of events) {
-      const existing = await this.findRecentAlert('CAPACITY_OVERLOAD', event.centroTrabalho.id);
+      const existing = await this.findRecentAlert('CAPACITY_OVERLOAD', event.centroTrabalho?.id ?? event.centroTrabalhoId);
       if (existing) continue;
 
       const alert: CreateAlertDto = {
         tipo: 'CAPACITY_OVERLOAD',
         severidade: event.utilizacaoPct > 150 ? 'CRITICAL' : 'HIGH',
-        titulo: `Sobrecarga: ${event.centroTrabalho.nome}`,
-        mensagem: `Centro de trabalho ${event.centroTrabalho.codigo} (${event.centroTrabalho.nome}) com utilização de ${event.utilizacaoPct.toFixed(1)}% no período ${event.periodoInicio.toISOString().split('T')[0]}.`,
-        entityId: event.centroTrabalho.id,
+        titulo: `Sobrecarga: ${event.centroTrabalho?.nome ?? event.centroTrabalhoId}`,
+        mensagem: `Centro de trabalho ${event.centroTrabalho?.codigo ?? ''} (${event.centroTrabalho?.nome ?? event.centroTrabalhoId}) com utilização de ${Number(event.utilizacaoPct ?? 0).toFixed(1)}% no período ${event.periodoInicio ? new Date(event.periodoInicio).toISOString().split('T')[0] : event.dataEvento?.toISOString().split('T')[0] ?? ''}.`,
+        entityId: event.centroTrabalho?.id ?? event.centroTrabalhoId,
         entityType: 'CentroTrabalho',
         metadata: {
-          codigo: event.centroTrabalho.codigo,
+          codigo: event.centroTrabalho?.codigo ?? '',
           utilizacaoPct: event.utilizacaoPct,
-          periodoInicio: event.periodoInicio.toISOString(),
+          periodoInicio: event.periodoInicio ? new Date(event.periodoInicio).toISOString() : event.dataEvento?.toISOString() ?? '',
         },
       };
       await this.notificacaoService.create(alert);
@@ -173,26 +174,26 @@ export class AlertDetectorService {
    * AC-8: FORECAST_DEVIATION — actual vs forecast MAPE > threshold.
    */
   async detectForecastDeviation(): Promise<void> {
-    const results = await this.prisma.resultadoForecast.findMany({
+    const results = await (this.prisma.forecastResultado as any).findMany({
       where: { mape: { gt: this.forecastDeviationThreshold } },
-      include: { produto: { select: { id: true, sku: true, descricao: true } } },
+      include: { produto: { select: { id: true, codigo: true, descricao: true } } },
       orderBy: { createdAt: 'desc' },
       take: 50,
-    });
+    }) as any[];
 
     for (const result of results) {
-      const existing = await this.findRecentAlert('FORECAST_DEVIATION', result.produto.id);
+      const existing = await this.findRecentAlert('FORECAST_DEVIATION', result.produto?.id ?? result.produtoId);
       if (existing) continue;
 
       const alert: CreateAlertDto = {
         tipo: 'FORECAST_DEVIATION',
         severidade: result.mape > 50 ? 'HIGH' : 'MEDIUM',
-        titulo: `Desvio de forecast: ${result.produto.sku}`,
-        mensagem: `Produto ${result.produto.descricao} (${result.produto.sku}) com MAPE de ${result.mape.toFixed(1)}% (limiar: ${this.forecastDeviationThreshold}%).`,
-        entityId: result.produto.id,
+        titulo: `Desvio de forecast: ${result.produto?.codigo ?? result.produtoId}`,
+        mensagem: `Produto ${result.produto?.descricao ?? ''} (${result.produto?.codigo ?? result.produtoId}) com MAPE de ${Number(result.mape ?? 0).toFixed(1)}% (limiar: ${this.forecastDeviationThreshold}%).`,
+        entityId: result.produto?.id ?? result.produtoId,
         entityType: 'Produto',
         metadata: {
-          sku: result.produto.sku,
+          sku: result.produto?.codigo ?? result.produtoId,
           mape: result.mape,
           threshold: this.forecastDeviationThreshold,
         },
@@ -205,7 +206,7 @@ export class AlertDetectorService {
    * AC-9: STORAGE_FULL — warehouse occupancy > 90%.
    */
   async detectStorageFull(): Promise<void> {
-    const depositos = await this.prisma.deposito.findMany({
+    const depositos = await (this.prisma.deposito as any).findMany({
       where: { ativo: true },
       select: {
         id: true,
@@ -214,12 +215,14 @@ export class AlertDetectorService {
         capacidadeM3: true,
         ocupacaoAtualM3: true,
       },
-    });
+    }) as any[];
 
     for (const dep of depositos) {
-      if (!dep.capacidadeM3 || dep.capacidadeM3 === 0) continue;
+      const capacidadeM3 = Number(dep.capacidadeM3 ?? 0);
+      if (!capacidadeM3 || capacidadeM3 === 0) continue;
 
-      const occupancyPct = ((dep.ocupacaoAtualM3 ?? 0) / dep.capacidadeM3) * 100;
+      const ocupacaoAtualM3 = Number(dep.ocupacaoAtualM3 ?? 0);
+      const occupancyPct = (ocupacaoAtualM3 / capacidadeM3) * 100;
       if (occupancyPct <= 90) continue;
 
       const existing = await this.findRecentAlert('STORAGE_FULL', dep.id);
@@ -229,7 +232,7 @@ export class AlertDetectorService {
         tipo: 'STORAGE_FULL',
         severidade: occupancyPct > 95 ? 'CRITICAL' : 'HIGH',
         titulo: `Depósito quase cheio: ${dep.nome}`,
-        mensagem: `Depósito ${dep.codigo} (${dep.nome}) com ${occupancyPct.toFixed(1)}% de ocupação (${dep.ocupacaoAtualM3?.toFixed(1) ?? 0}/${dep.capacidadeM3.toFixed(1)} m³).`,
+        mensagem: `Depósito ${dep.codigo} (${dep.nome}) com ${occupancyPct.toFixed(1)}% de ocupação (${ocupacaoAtualM3.toFixed(1)}/${capacidadeM3.toFixed(1)} m³).`,
         entityId: dep.id,
         entityType: 'Deposito',
         metadata: {

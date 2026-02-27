@@ -29,5 +29,5 @@ export class FilterCyclesDto extends PaginationDto {
 
   @IsOptional()
   @IsIn(ALLOWED_SORT_FIELDS)
-  override sortBy: string = 'createdAt';
+  override sortBy?: string;
 }
